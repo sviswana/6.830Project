@@ -6,7 +6,10 @@ class QueryEngine:
     def __init__(self, socket):
         self.socket = socket
 
-    def parse(self, ):
+    def serialize(self, object):
+        pass
+    def deserialize(self, object):
+        pass
 
 class QueryType(Enum):
     UPDATE = 1
