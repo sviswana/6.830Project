@@ -2,7 +2,7 @@ from enum import Enum
 
 
 class QueryEngine:
-    def __init__(self, socket):
+    def __init__(self):
         pass
 
 
