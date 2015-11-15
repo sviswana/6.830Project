@@ -5,9 +5,11 @@
     Simple socket server using threads
     from: http://www.binarytides.com/python-socket-server-code-example/
 '''
- 
 import socket
 import sys
+from QueryEngine import QueryEngine
+from QueryEngine import QueryType
+from enum import Enum
 from thread import *
  
 HOST = ''   # Symbolic name meaning all available interfaces
@@ -31,28 +33,33 @@ print 'Socket now listening'
  
 #Function for handling connections. This will be used to create threads
 def clientthread(conn):
+    QueryEngine qe = QueryEngine()
     #Sending message to connected client
     conn.send('Welcome to the server. Type something and hit enter\n') #send only takes string
      
     #infinite loop so that function do not terminate and thread do not end.
     while True:
-         
         #Receiving from client
         data = conn.recv(1024)
-        if "INSERT" in data.upper():
-            reply = "inserting: " + data
-        elif "QUERY" in data.upper():
-            reply = "querying: " + data
-        elif "UPDATE" in data.upper():
-            reply = "updating: " + data
+        print data
+        params = qe.deserialize(data)
+        param_type = params[0]
+
+        if param_type == QueryType.SELECT:
+            reply = "selecting"
+            #reply = db.select(params[1:])
+        elif param_type == QueryType.INSERT:
+            reply = "inserting"
+            #reply = db.insert(params[1:])
+        elif param_type == QueryType.UPDATE:
+            reply = "updating"
+            #reply = db.update(params[1:])
         else:
-            reply = data
-        if not data: 
-            break
+            # throw exception
+            reply = "Invalid arguments, should be start with SELECT, INSERT, or UPDATE"
      
         conn.sendall(reply)
      
-    #came out of loop
     conn.close()
  
 #now keep talking with the client
