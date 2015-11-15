@@ -33,7 +33,7 @@ print 'Socket now listening'
  
 #Function for handling connections. This will be used to create threads
 def clientthread(conn):
-    QueryEngine qe = QueryEngine()
+    qe = QueryEngine()
     #Sending message to connected client
     conn.send('Welcome to the server. Type something and hit enter\n') #send only takes string
      
