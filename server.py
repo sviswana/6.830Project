@@ -11,7 +11,7 @@ from QueryEngine import QueryEngine
 from QueryEngine import QueryType
 from enum import Enum
 from thread import *
-import Constants
+from Constants import Constants
 
 HOST = ''   # Symbolic name meaning all available interfaces
 PORT = 8888 # Arbitrary non-privileged port
