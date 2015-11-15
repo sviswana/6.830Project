@@ -18,11 +18,12 @@ class QueryEngine:
         serString = DATA_SEPARATOR.join(data[1:end]);
 
         serString =  QTYPE_SEPARATOR.join([qType.value, serString])
-        return serString;
+        return serString + QUERY_SEPARATOR;
 
-    def deserialize(self, query):
-        if not query:
+    def deserialize(self, fullquery):
+        if not fullquery:
             raise QueryError("No data provided for query");
+        query = fullquery.split(QUERY_SEPARATOR)[0]
         qtype_val, data = query.split(QTYPE_SEPARATOR);
         qtype = int(qtype_val);
         return [qtype].append(data.split(DATA_SEPARATOR));
