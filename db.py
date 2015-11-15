@@ -1,4 +1,5 @@
 import json
+import os
 #[update <timestamp> Hillary 5]
 
 class Db:
@@ -23,15 +24,37 @@ class Db:
         filename = timestamp / 86400
         tempTime = timestamp / 300
         bucket = tempTime % 288
-        keywords = self.countMap[bucket]
-    
+        if not os.path.isfile(str(filename)+'.txt'):
+            dataMap = {}
+            for i in range(0,288):
+                dataMap[i*5] = {}
+            with open(str(filename)+'.txt','w') as data_file:
+                json.load(datamap)
+                
+        with open(str(filename)+'.txt') as data_file:
+            dataMap = json.load(data_file)
+        keywords = dataMap[bucket]
         if not keyword in keywords:
-            self.countMap[bucket][keyword] = count
+            dataMap[bucket][keyword] = count
         else:
-            self.countMap[bucket][keyword]+=count
-        with open(str(filename)+'.txt', 'a') as outfile:
-            json.loads(self.countMap) ## we don't want to load it every time. 
-        return True    
+            dataMap[bucket][keyword]+=count
+        with open(str(filename)+'.txt', 'w') as outfile:
+            json.loads(dataMap) ## we don't want to load it every time. 
+        return True
+
+    #for right now, we only support one timestamp for select
+    def select(self, timestamp, keyword):
+        filename = timestamp / 86400
+        tempTime = timestamp / 300
+        bucket = tempTime % 288
+        #first get the associated page with this data & timestamp
+        with open(str(filename)+'.txt') as data_file:
+            dataMap = json.load(data_file)
+        if not dataMap[bucket][keyword]:
+            return 0
+        else:
+            return dataMap[bucket][keyword]
+            
             
     def update(self,timestamp, values):
 
