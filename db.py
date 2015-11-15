@@ -31,7 +31,21 @@ class Db:
             self.countMap[bucket][keyword]+=count
         with open(str(filename)+'.txt', 'a') as outfile:
             json.loads(self.countMap) ## we don't want to load it every time. 
-        return True    
+        return True
+
+    #for right now, we only support one timestamp for select
+    def select(self, timestamp, keyword):
+        filename = timestamp / 86400
+        tempTime = timestamp / 300
+        bucket = tempTime % 288
+        #first get the associated page with this data & timestamp
+        with open(str(filename)+'.txt') as data_file:
+            dataMap = json.load(data_file)
+        if not dataMap[bucket][keyword]:
+            return 0
+        else:
+            return dataMap[bucket][keyword]
+            
             
     def update(self,timestamp, values):
 
