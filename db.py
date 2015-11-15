@@ -36,7 +36,7 @@ class Db:
                 
         with open(str(filename)+'.txt') as data_file:
             dataMap = json.load(data_file)
-        print 'dataMap', dataMap#str(dataMap).replace("u\'","\'")
+        #print 'dataMap', dataMap#str(dataMap).replace("u\'","\'")
         print "bucket", bucket
         keywords = dataMap[str(bucket)]
         bucket = str(bucket)
@@ -44,13 +44,13 @@ class Db:
         if not keyword in keywords:
             print 'not in keyword so adding'
             dataMap[bucket][keyword] = count
-            print 'dataMap', dataMap
+            #print 'dataMap', dataMap
         else:
             dataMap[bucket][keyword]+=count
             
         with open(str(filename)+'.txt', 'w') as outfile:
             print 'writing to json output'
-            print dataMap
+            #print dataMap
             json.dump(dataMap, outfile) ## we don't want to load it every time. 
         return True
 
