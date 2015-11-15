@@ -16,20 +16,21 @@ class Db:
             json.loads(data)
 
 
-    def insert(self,timestamp, values):
+    def insert(self,timestamp, keyword, count):
         ##assume values is coming in the python form:
         ##[('clinton', 1),('sanders',1)]
         ##do we want to store individual timestamps as well
+        filename = timestamp / 86400
         tempTime = timestamp / 300
         bucket = tempTime % 288
         keywords = self.countMap[bucket]
     
-            
-        for (keyword, count) in values:
-            if not keyword in keywords:
-                self.countMap[bucket][keyword] = count
-            else:
-                self.countMap[bucket][keyword]+=count
+        if not keyword in keywords:
+            self.countMap[bucket][keyword] = count
+        else:
+            self.countMap[bucket][keyword]+=count
+        with open(str(filename)+'.txt', 'a') as outfile:
+            json.loads(self.countMap) ## we don't want to load it every time. 
         return True    
             
     def update(self,timestamp, values):
