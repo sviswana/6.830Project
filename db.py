@@ -36,7 +36,7 @@ class Db:
 
     def checkIfExists(timestamp):
     
-        
+    #helper function if we want to change window size for inserting in future
     def setWindow(self, windowSize):
         return 24*60 / windowSize
     
