@@ -5,6 +5,7 @@ from tweepy import Stream
 from QueryEngine import QueryEngine
 from QueryEngine import QueryType
 import socket
+import Constants
 #from pandas import DataFrame
 import json
 #import openpyxl
@@ -25,7 +26,7 @@ class TweetListener(StreamListener):
     def on_data(self, data):
         #print data
         newdata = json.loads(data)
-        keywords = []
+        keywords = Constants.KEYWORDS
         text = newdata["text"]
         timestamp = newdata["timestamp_ms"]
         keywordMap = {}
@@ -42,8 +43,8 @@ class TweetListener(StreamListener):
                 currMax = keywordMap[word]
                 maxKeyWord = word
         return [timestamp, maxKeyWord]
-                
-        
+
+
  #       df1= json.loads(data)
  #       print "df1", df1
  #       df = DataFrame(df1)
@@ -61,8 +62,8 @@ class TweetListener(StreamListener):
 if __name__ == '__main__':
 
     #Define the stream and port number
-    host = "18.189.57.110"
-    port = 8888
+    host = Constants.HOST
+    port = Constants.PORT
     #This handles Twitter authetification and the connection to Twitter Streaming API
     l = TweetListener(host, port)
     auth = OAuthHandler(consumer_key, consumer_secret)
