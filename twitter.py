@@ -23,7 +23,27 @@ class TweetListener(StreamListener):
         self.queryEngine = QueryEngine()
 
     def on_data(self, data):
-        print data
+        #print data
+        newdata = json.loads(data)
+        keywords = []
+        text = newdata["text"]
+        timestamp = newdata["timestamp_ms"]
+        keywordMap = {}
+        for word in keywords:
+            if word in text:
+                if not word in keywordMap:
+                    keywordMap[word]=1
+                else:
+                    keywordMap[word]+=1
+        currMax = 0
+        maxKeyWord = ''
+        for word in keywordMap.keys():
+            if keywordMap[word] > currMax:
+                currMax = keywordMap[word]
+                maxKeyWord = word
+        return [timestamp, maxKeyWord]
+                
+        
  #       df1= json.loads(data)
  #       print "df1", df1
  #       df = DataFrame(df1)

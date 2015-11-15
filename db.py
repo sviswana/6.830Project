@@ -4,10 +4,6 @@ import ast
 #[update <timestamp> Hillary 5]
 
 class Db:
-    def __init__(self):
-        self.countMap = {}
-        for i in range(0,288):
-            self.countMap[i] = {}
         
     def get_data(self,timestamp,data):
         ##assumes timestamp is passed in seconds
