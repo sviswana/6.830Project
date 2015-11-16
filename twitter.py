@@ -5,7 +5,7 @@ from tweepy import Stream
 from QueryEngine import QueryEngine
 from QueryEngine import QueryType
 import socket
-import Constants
+from Constants import Constants
 #from pandas import DataFrame
 import json
 #import openpyxl
@@ -42,7 +42,10 @@ class TweetListener(StreamListener):
             if keywordMap[word] > currMax:
                 currMax = keywordMap[word]
                 maxKeyWord = word
-        return [timestamp, maxKeyWord]
+
+        queryString = self.queryEngine.serialize([QueryType.UPDATE, timestamp, maxKeyWord, 1])
+        print queryString
+        self.sock.send(queryString)
 
 
  #       df1= json.loads(data)
