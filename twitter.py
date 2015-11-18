@@ -5,6 +5,7 @@ from tweepy import Stream
 from QueryEngine import QueryEngine
 from QueryEngine import QueryType
 import socket
+from db import db
 from Constants import Constants
 #from pandas import DataFrame
 import json
@@ -25,25 +26,34 @@ class TweetListener(StreamListener):
 
     def on_data(self, data):
         #print data
+        print 'START'
         newdata = json.loads(data)
         keywords = Constants.KEYWORDS
         text = newdata["text"]
+        
+        #print 'DATA', data
         timestamp = newdata["timestamp_ms"]
         keywordMap = {}
+        text = text.replace("'", "")
+        print 'TEXT', text
         for word in keywords:
+            #print "word", word
+            #print 'text', text
             if word in text:
                 if not word in keywordMap:
                     keywordMap[word]=1
                 else:
                     keywordMap[word]+=1
+            print "keyword map", keywordMap
         currMax = 0
         maxKeyWord = ''
         for word in keywordMap.keys():
             if keywordMap[word] > currMax:
                 currMax = keywordMap[word]
                 maxKeyWord = word
-
-        queryString = self.queryEngine.serialize([QueryType.UPDATE, timestamp, maxKeyWord, 1])
+        print keywordMap
+        
+        queryString = self.queryEngine.serialize([QueryType.INSERT, timestamp, maxKeyWord, 1])
         print queryString
         self.sock.send(queryString)
 
@@ -73,6 +83,7 @@ if __name__ == '__main__':
     auth.set_access_token(access_token, access_token_secret)
     stream = Stream(auth, l)
     #This line filter Twitter Streams to capture data by the keywords: 'python', 'javascript', 'ruby'
-    stream.filter(track=['Clinton', 'clinton','Sanders','sanders','FeelTheBern','Trump', 'hillaryclinton','rubio', 'jeb','Jeb','Carson','carson','Fiorina','fiorina','Cruz','cruz','Jindall','jindall','Rand','rand'])
+    print 'constant', Constants.KEYWORDS
+    stream.filter(track=Constants.KEYWORDS)
 #    {'locations':'-180,-90,180,90'}
 #    stream.filter(locations=[-180,-90,180,90])

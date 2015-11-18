@@ -12,16 +12,19 @@ from QueryEngine import QueryType
 from enum import Enum
 from thread import *
 from Constants import Constants
+from db import db
 
 HOST = ''   # Symbolic name meaning all available interfaces
-PORT = 8888 # Arbitrary non-privileged port
+PORT = 8000 # Arbitrary non-privileged port
 
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 print 'Socket created'
 
 #Bind socket to local host and port
 try:
+    s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
     s.bind((HOST, Constants.PORT))
+    
 except socket.error as msg:
     print 'Bind failed. Error Code : ' + str(msg[0]) + ' Message ' + msg[1]
     sys.exit()
@@ -45,12 +48,17 @@ def clientthread(conn):
         print data
         params = qe.deserialize(data)
         param_type = params[0]
-
+        print 'PARAMS', params
         if param_type == QueryType.SELECT:
             reply = "selecting"
             #reply = db.select(params[1:])
         elif param_type == QueryType.INSERT:
-            reply = "inserting"
+            if params[2]=='':
+                pass
+            else:
+                db.insert(params[1]/1000,params[2], params[3])
+                reply = "inserting"
+            
             #reply = db.insert(params[1:])
         elif param_type == QueryType.UPDATE:
             reply = "updating"
