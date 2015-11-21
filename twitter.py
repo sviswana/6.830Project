@@ -35,7 +35,7 @@ class TweetListener(StreamListener):
         timestamp = newdata["timestamp_ms"]
         keywordMap = {}
         text = text.replace("'", "")
-        print 'TEXT', text
+        # print 'TEXT', text
         for word in keywords:
             #print "word", word
             #print 'text', text
@@ -44,7 +44,7 @@ class TweetListener(StreamListener):
                     keywordMap[word]=1
                 else:
                     keywordMap[word]+=1
-            print "keyword map", keywordMap
+            # print "keyword map", keywordMap
         currMax = 0
         maxKeyWord = ''
         for word in keywordMap.keys():
