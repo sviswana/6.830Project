@@ -64,10 +64,10 @@ class Database:
         #first get the associated page with this data & timestamp
         with open(str(filename)+'.txt') as data_file:
             dataMap = json.load(data_file)
-        if not keyword in dataMap[bucket]:
-            return 0
-        else:
+        if bucket in dataMap and keyword in dataMap[bucket]:
             return dataMap[bucket][keyword]
+        else:
+            return 0
             
     #for right now, support start and end timestamp, and one keyword
     def selectRange(self, timestamps, keyword):
@@ -77,7 +77,7 @@ class Database:
         for fileNumber in range(startFileNumber, endFileNumber+1):
             with open(str(fileNumber)+'.txt') as data_file:
                 dataMap = json.load(data_file)
-            if keyword in dataMap[bucket]:
+            if bucket in dataMap and keyword in dataMap[bucket]:
                 aggregateCount+=dataMap[bucket][keyword]
         return aggregateCount
         
