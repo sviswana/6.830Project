@@ -65,9 +65,9 @@ class Database:
         with open(str(filename)+'.txt') as data_file:
             dataMap = json.load(data_file)
         if bucket in dataMap and keyword in dataMap[bucket]:
-            return dataMap[bucket][keyword]
+            return str(dataMap[bucket][keyword])
         else:
-            return 0
+            return str(0)
             
     #for right now, support start and end timestamp, and one keyword
     def selectRange(self, timestamps, keyword):
@@ -79,7 +79,7 @@ class Database:
                 dataMap = json.load(data_file)
             if bucket in dataMap and keyword in dataMap[bucket]:
                 aggregateCount+=dataMap[bucket][keyword]
-        return aggregateCount
+        return str(aggregateCount)
         
         
 
