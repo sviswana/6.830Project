@@ -1,3 +1,4 @@
+var plotly = require('plotly')("krkini16", "blzpptw3c0")
 
 //Client for DB
 var net = require('net');
@@ -6,7 +7,7 @@ var client = new net.Socket();
 client.connect(8000, '127.0.0.1', function() {
 	console.log('Connected');
 	//Hardcoded tweet to examine workflow
-	client.write('2#1448082159999|Trump|1;');
+	client.write('3#1448082159999|Trump;');
 });
 
 //This is a listener for whenever we receive data
