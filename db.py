@@ -50,20 +50,39 @@ class Db:
             json.dump(dataMap, outfile) ## we don't want to load it every time. 
         return True
 
-    #for right now, we only support one timestamp for select
-    def select(self, timestamp, keyword):
+
+    def getNames(self, timestamp):
         filename = timestamp / 86400
         tempTime = timestamp / 300
         bucket = tempTime % 288
+        return [filename, bucket]
+
+    #for right now, we only support one timestamp for select
+    def select(self, timestamp, keyword):
+        [filename, bucket] = getNames(timestamp)
+        
         #first get the associated page with this data & timestamp
         with open(str(filename)+'.txt') as data_file:
             dataMap = json.load(data_file)
-        if not dataMap[bucket][keyword]:
+        if not keyword in dataMap[bucket]:
             return 0
         else:
             return dataMap[bucket][keyword]
             
-        
+    def selectRange(self, timestamps, keyword):
+        [startFileNumber, startBucket] = getNames(timestamps[0])
+        [endFileNumber, endBucket] = getNames(timestamps[1])
+
+
+        aggregateCount = 0
+        with open(str(filename)+'.txt') as data_file:
+            dataMap = json.load(data_file)
+        if not keyword in dataMap[bucket]:
+            return 0
+        else:
+            return dataMap[bucket][keyword]
+
+
     
     #helper function if we want to change window size for inserting in future
     def setWindow(self, windowSize):
