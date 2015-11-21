@@ -3,7 +3,7 @@ import os
 import ast
 #[update <timestamp> Hillary 5]
 
-class db:
+class Database:
         
     def get_data(self,timestamp,data):
         ##assumes timestamp is passed in seconds
@@ -87,4 +87,4 @@ class db:
     #helper function if we want to change window size for inserting in future
     def setWindow(self, windowSize):
         return 24*60 / windowSize
-    
+db = Database()
