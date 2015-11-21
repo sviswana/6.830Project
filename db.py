@@ -69,19 +69,19 @@ class Db:
         else:
             return dataMap[bucket][keyword]
             
+    #for right now, support start and end timestamp, and one keyword
     def selectRange(self, timestamps, keyword):
         [startFileNumber, startBucket] = getNames(timestamps[0])
         [endFileNumber, endBucket] = getNames(timestamps[1])
-
-
         aggregateCount = 0
-        with open(str(filename)+'.txt') as data_file:
-            dataMap = json.load(data_file)
-        if not keyword in dataMap[bucket]:
-            return 0
-        else:
-            return dataMap[bucket][keyword]
-
+        for fileNumber in range(startFileNumber, endFileNumber+1):
+            with open(str(fileNumber)+'.txt') as data_file:
+                dataMap = json.load(data_file)
+            if keyword in dataMap[bucket]:
+                aggregateCount+=dataMap[bucket][keyword]
+        return aggregateCount
+        
+        
 
     
     #helper function if we want to change window size for inserting in future
