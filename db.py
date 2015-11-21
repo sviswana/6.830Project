@@ -3,7 +3,7 @@ import os
 import ast
 #[update <timestamp> Hillary 5]
 
-class Db:
+class db:
         
     def get_data(self,timestamp,data):
         ##assumes timestamp is passed in seconds
