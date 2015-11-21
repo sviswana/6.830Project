@@ -14,7 +14,7 @@ from thread import *
 from Constants import Constants
 from db import db
 
-HOST = ''   # Symbolic name meaning all available interfaces
+HOST = '127.0.0.1'   # Symbolic name meaning all available interfaces
 PORT = 8000 # Arbitrary non-privileged port
 
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -39,7 +39,7 @@ print 'Socket now listening'
 def clientthread(conn):
     qe = QueryEngine()
     #Sending message to connected client
-    conn.send('Welcome to the server. Type something and hit enter\n') #send only takes string
+    #conn.send('Welcome to the server. Type something and hit enter\n') #send only takes string
 
     #infinite loop so that function do not terminate and thread do not end.
     while True:
@@ -57,7 +57,7 @@ def clientthread(conn):
                 pass
             else:
                 db.insert(params[1]/1000,params[2], params[3])
-                reply = "inserting"
+                reply = "inserting " + data
             
             #reply = db.insert(params[1:])
         elif param_type == QueryType.UPDATE:

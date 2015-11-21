@@ -21,6 +21,7 @@ class QueryEngine:
         return serString + self.QUERY_SEPARATOR;
 
     def deserialize(self, fullquery):
+        print fullquery
         if not fullquery:
             raise QueryError("No data provided for query");
         query = fullquery.split(self.QUERY_SEPARATOR)[0]

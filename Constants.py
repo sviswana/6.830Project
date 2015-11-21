@@ -1,7 +1,7 @@
 class Constants:
-    HOST = '18.189.56.233'
+    HOST = '127.0.0.1'
     KEYWORDS= ['Clinton', 'clinton','Hillary', 'Sanders','sanders','FeelTheBern','Trump', 'trump','hillaryclinton','rubio', 'jeb','Jeb','Carson','carson','Fiorina','fiorina','Ted Cruz','TedCruz','Jindal','jindal','Rand','rand']
-    PORT = 8080
+    PORT = 8000
 
     def __init__(self):
         pass
