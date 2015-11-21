@@ -59,7 +59,7 @@ class Database:
 
     #for right now, we only support one timestamp for select
     def select(self, timestamp, keyword):
-        [filename, bucket] = getNames(timestamp)
+        [filename, bucket] = self.getNames(timestamp)
         
         #first get the associated page with this data & timestamp
         with open(str(filename)+'.txt') as data_file:
