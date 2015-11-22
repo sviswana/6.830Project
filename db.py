@@ -58,6 +58,7 @@ class Database:
         return [filename, bucket]
 
     #for right now, we only support one timestamp for select
+    ##NOTE THAT THIS RETURNS A STRING VALUE (NEED TO CHANGE IN FUTURE)
     def select(self, timestamp, keyword):
         [filename, bucket] = self.getNames(timestamp)
         
