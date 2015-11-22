@@ -50,8 +50,8 @@ def clientthread(conn):
         param_type = params[0]
         print 'PARAMS', params
         if param_type == QueryType.SELECT:
-            # reply = "selecting"
-            reply = db.select(params[1]/1000, params[2])
+            reply = "selecting"
+            #reply = db.select(params[1:])
         elif param_type == QueryType.INSERT:
             if params[2]=='':
                 pass
@@ -66,7 +66,7 @@ def clientthread(conn):
         else:
             # throw exception
             reply = "Invalid arguments, should be start with SELECT, INSERT, or UPDATE"
-
+        print reply
         conn.sendall(reply)
 
     conn.close()
