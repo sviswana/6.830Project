@@ -61,7 +61,8 @@ class Database:
     ##NOTE THAT THIS RETURNS A STRING VALUE (NEED TO CHANGE IN FUTURE)
     def select(self, timestamp, keyword):
         [filename, bucket] = self.getNames(timestamp)
-        
+        bucket = str(bucket)
+        keyword = str(keyword)
         #first get the associated page with this data & timestamp
         with open(str(filename)+'.txt') as data_file:
             dataMap = json.load(data_file)
