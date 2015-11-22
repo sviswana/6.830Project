@@ -3,7 +3,7 @@ import os
 import ast
 #[update <timestamp> Hillary 5]
 
-class db:
+class Database:
         
     def get_data(self,timestamp,data):
         ##assumes timestamp is passed in seconds
@@ -58,16 +58,17 @@ class db:
         return [filename, bucket]
 
     #for right now, we only support one timestamp for select
+    ##NOTE THAT THIS RETURNS A STRING VALUE (NEED TO CHANGE IN FUTURE)
     def select(self, timestamp, keyword):
-        [filename, bucket] = getNames(timestamp)
+        [filename, bucket] = self.getNames(timestamp)
         
         #first get the associated page with this data & timestamp
         with open(str(filename)+'.txt') as data_file:
             dataMap = json.load(data_file)
-        if not keyword in dataMap[bucket]:
-            return 0
+        if bucket in dataMap and keyword in dataMap[bucket]:
+            return str(dataMap[bucket][keyword])
         else:
-            return dataMap[bucket][keyword]
+            return str(0)
             
     #for right now, support start and end timestamp, and one keyword
     def selectRange(self, timestamps, keyword):
@@ -77,9 +78,9 @@ class db:
         for fileNumber in range(startFileNumber, endFileNumber+1):
             with open(str(fileNumber)+'.txt') as data_file:
                 dataMap = json.load(data_file)
-            if keyword in dataMap[bucket]:
+            if bucket in dataMap and keyword in dataMap[bucket]:
                 aggregateCount+=dataMap[bucket][keyword]
-        return aggregateCount
+        return str(aggregateCount)
         
         
 
@@ -87,4 +88,4 @@ class db:
     #helper function if we want to change window size for inserting in future
     def setWindow(self, windowSize):
         return 24*60 / windowSize
-    
+db = Database()
