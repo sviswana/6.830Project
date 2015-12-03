@@ -73,14 +73,26 @@ class Database:
             
     #for right now, support start and end timestamp, and one keyword
     def selectRange(self, timestamps, keyword):
-        [startFileNumber, startBucket] = getNames(timestamps[0])
+        [startFileNumber, startBucket] = getNames(timestamps[0]) #convert bucket to string
         [endFileNumber, endBucket] = getNames(timestamps[1])
         aggregateCount = 0
+        #If timestamps span more than a day, we need to ensure that we get all the buckets in the range
         for fileNumber in range(startFileNumber, endFileNumber+1):
-            with open(str(fileNumber)+'.txt') as data_file:
-                dataMap = json.load(data_file)
-            if bucket in dataMap and keyword in dataMap[bucket]:
-                aggregateCount+=dataMap[bucket][keyword]
+            if fileNumber == startFileNumber:
+                startB = startBucket
+                endB = 287 #hardcoding right now, but can call windowsize if we want this to work for different time ranges
+            elif fileNumber == endFileNumber+1:
+                startB = 0
+                endB = endBucket
+            else:
+                startB = 0
+                endB = 287
+            for bucketNumber in range(startB, endB+1):
+                bucketNumber = str(bucketNumber)
+                with open(str(fileNumber)+'.txt') as data_file:
+                    dataMap = json.load(data_file)
+                if bucketNumber in dataMap and str(keyword) in dataMap[bucketNumber]:
+                    aggregateCount+=dataMap[bucketNumber][str(keyword)]
         return str(aggregateCount)
         
         
