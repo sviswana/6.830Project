@@ -51,7 +51,7 @@ def clientthread(conn):
         print 'PARAMS', params
         if param_type == QueryType.SELECT:
             reply = "selecting"
-            #reply = db.select(params[1:])
+            reply = db.select(params[1:])
         elif param_type == QueryType.INSERT:
             if params[2]=='':
                 pass
