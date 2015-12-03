@@ -81,7 +81,7 @@ class Database:
             if fileNumber == startFileNumber:
                 startB = startBucket
                 endB = 287 #hardcoding right now, but can call windowsize if we want this to work for different time ranges
-            else if fileNumber == endFileNumber+1:
+            elif fileNumber == endFileNumber+1:
                 startB = 0
                 endB = endBucket
             else:
