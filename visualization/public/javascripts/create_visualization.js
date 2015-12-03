@@ -1,11 +1,20 @@
 $(document).ready(function(){
+  $('#show_visualization').click(function(){
 	query = '3#1448082159999|Trump;'
 
   	$.get('/select/' + encodeURIComponent('3#1448082159999|Trump;'), function(data){
-  		console.log(data);
+      timestamp = 120
+  		value = data["content"]["data"];
+      // old data
+      data = [{x: 1,y: 5},{x: 20,y: 20}, {x: 40,y: 10}, {x: 60,y: 40}, {x: 80,y: 5}, {x: 100,y: 60}]
+      // add new data point to end
+      data.push({x: timestamp, y: value})
+      makeGraph(data);
   	})
 
-  	var lineData = [{x: 1,y: 5}, {x: 20,y: 20}, {x: 40,y: 10}, {x: 60,y: 40}, {x: 80,y: 5}, {x: 100,y: 60}];
+
+function makeGraph(lineData){
+  	//var lineData = [{x: 1,y: 5}, {x: 20,y: 20}, {x: 40,y: 10}, {x: 60,y: 40}, {x: 80,y: 5}, {x: 100,y: 60}];
 var vis = d3.select('#visualisation'),
     WIDTH = 1000,
     HEIGHT = 500,
@@ -59,6 +68,7 @@ var lineFunc = d3.svg.line()
   .attr('stroke', 'blue')
   .attr('stroke-width', 2)
   .attr('fill', 'none');
-
+}
   })
 
+})

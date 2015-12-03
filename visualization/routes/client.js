@@ -31,6 +31,7 @@ function send_query(query, callback){
 	// client.destroy(); // kill client after server's response: SHOULD be uncommented but sends an automatic message to the server which can't be parsed yet
 	        callback(data.toString());
 		});
+		//client.destroy(); 
     })
 };
 
