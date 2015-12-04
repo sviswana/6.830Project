@@ -81,7 +81,7 @@ class Database:
             if fileNumber == startFileNumber:
                 startB = startBucket
                 endB = 287 #hardcoding right now, but can call windowsize if we want this to work for different time ranges
-            elif fileNumber == endFileNumber+1:
+            elif fileNumber == endFileNumber:
                 startB = 0
                 endB = endBucket
             else:
@@ -95,7 +95,41 @@ class Database:
                     aggregateCount+=dataMap[bucketNumber][str(keyword)]
         return str(aggregateCount)
         
+        #windowSize can be 
+    def selectRangeForDisplay(self, timestamps, keyword):
+        #sample timestamp is 1449186990 (assuming was divided by 1000 already)
+        tick = 5 * 60 #seconds to add - assuming window size is 5 here!
+        bucketMod = setWindow(5)
+        [startFileNumber, startBucket] = getNames(timestamps[0]) #convert bucket to string
+        [endFileNumber, endBucket] = getNames(timestamps[1])
         
+        #If timestamps span more than a day, we need to ensure that we get all the buckets in the range
+        t = timestamps[0]
+        finalList = []
+        for fileNumber in range(startFileNumber, endFileNumber+1):
+            if fileNumber == startFileNumber:
+                startB = startBucket
+                if startFileNumber==endFileNumber:
+                    endB = endBucket
+                else:
+                    endB = bucketMod-1 
+            elif fileNumber == endFileNumber+1:
+                startB = 0
+                endB = endBucket
+            else:
+                startB = 0
+                endB = bucketMod -1
+            for bucketNumber in range(startB, endB+1):
+
+                bucketNumber = str(bucketNumber)
+                with open(str(fileNumber)+'.txt') as data_file:
+                    dataMap = json.load(data_file)
+                if bucketNumber in dataMap and str(keyword) in dataMap[bucketNumber]:
+                    count=dataMap[bucketNumber][str(keyword)]
+                    finalList.append((t, count))
+                t = t+ tick
+                    
+        return finalList
 
     
     #helper function if we want to change window size for inserting in future
