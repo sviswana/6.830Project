@@ -1,3 +1,4 @@
+
 #Import the necessary methods from tweepy library
 from tweepy.streaming import StreamListener
 from tweepy import OAuthHandler
@@ -24,6 +25,11 @@ class TweetListener(StreamListener):
         self.sock.connect((host, port))
         self.queryEngine = QueryEngine()
 
+    def checkWords(self, wordList, text):
+        for word in wordList:
+            if word in text:
+                return True
+        return False
     def on_data(self, data):
         #print data
         print 'START'
@@ -39,7 +45,9 @@ class TweetListener(StreamListener):
         for word in keywords:
             #print "word", word
             #print 'text', text
-            if word in text:
+            wordList = keywords[word]
+
+            if self.checkWords(wordList,text):
                 if not word in keywordMap:
                     keywordMap[word]=1
                 else:
