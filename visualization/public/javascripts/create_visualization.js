@@ -1,5 +1,4 @@
 $(document).ready(function(){
-
 	candidateList = ["Hillary Clinton",
 	"Carly Fiorina",
 	"Bernie Sanders",
@@ -8,16 +7,35 @@ $(document).ready(function(){
 	"Ted Cruz", 
 	"Ben Carson", 
 	"Rand Paul"];
+
 	timerange = [];
 	currentTime = 1448082159999; //TODO (change this) : new Date();
 	DATA_SEPARATOR = "|";
-    QTYPE_SEPARATOR = "#";
-    QUERY_SEPARATOR = ";";
+	QTYPE_SEPARATOR = "#";
+	QUERY_SEPARATOR = ";";
+	traces = []
 
 	for( var i = 0; i < 5; i++){
 		timerange.push(currentTime - (i * 300000));
 	}
 
+	function initializeTraces(){
+		traces = [];
+	}
+
+	function addToTraces(trace){
+		traces.push(trace);
+		if(traces.length >= (candidateList.length * timerange.length)){
+			makeGraph(traces);
+		}
+
+	}
+
+
+	var layout = {
+		title:'Click Buttons to Delete Traces',
+		showlegend:false
+	};
 
 	$('#show_visualization').click(function(){
 		//query = '3#1448082159999|Trump;';
@@ -30,38 +48,44 @@ $(document).ready(function(){
 		//     data.push({x: timestamp, y: value})
 		//     makeGraph(data);
 		//   })
-			traceList = []
-			for(var i = 0; i < candidateList.length; i++){
-			   var candidate = candidateList[i];
+	for(var i = 0; i < candidateList.length; i++){
+		var candidate = candidateList[i];
 
-				
-				(function(cand, trList){
-					var trace = { "x" : [], "y" : [], "type" : "scatter", "line" : { color: 'rgb(55, 128, 191)',}};
+
+					// var trace = { "x" : [], "y" : [], "type" : "scatter", "line" : { color: 'rgb(55, 128, 191)',}};
 
 					for(var j = 0; j < timerange.length; j++){
 
-						(function(UNIX_timestamp_ms, candidate, trace){
+						(function(UNIX_timestamp_ms, candidate, callback){
 							query = generateSelectQuery(UNIX_timestamp_ms, candidate);
 							$.get("/select/" + encodeURIComponent(query),
 								function(data){
+									var trace = {};
 									var result = data["content"]["data"];
-									trace["x"].push(UNIX_timestamp_ms);
-									trace["y"].push(result);
+									trace["candidate"]  = candidate.toString();
+									trace["unix_time"] = UNIX_timestamp_ms;
+									trace["count"]= result;
+
 									console.log(candidate.toString());
-									//console.log(trace);
-							});
-						})(timerange[j], cand, trace);
+									console.log(trace);
+
+									callback(trace);
+								});
+						})(timerange[j], candidate, addToTraces);
 
 					}
-					trList.push(trace);
-				})(candidate, traceList);
 
-				console.log(traceList);
-				
-			}
-		})
+					console.log("TL");
+					console.log(traces);
 
-		function generateSelectQuery(UNIX_timestamp_ms, candidate){
+
+
+				}
+				console.log("OUT");
+
+			})
+
+function generateSelectQuery(UNIX_timestamp_ms, candidate){
 			query = "3"; //to Select single datapoint
 			query += "#";
 			query += UNIX_timestamp_ms.toString();
@@ -84,9 +108,35 @@ $(document).ready(function(){
 			return time;
 		}
 
-		function makeGraph(lineData){
+		function mapX(d){
+			// var xList = [];
+			// for(var i = 0; i < traceList.length; i++){
+			// 	xList = xList.concat(traceList[i].unix_time);
+			// }
+			// return xList;
+			return d.unix_time;
+		}
+
+		function mapY(d){
+			// var yList = [];
+			// for(var i = 0; i < traceList.length; i++){
+			// 	yList = yList.concat(traceList[i].count);
+			// }
+			// return yList;
+			return d.count;
+		}
+
+		function makeGraph(traceList){
+			var dataGroup = d3.nest()
+			.key(function(d) {
+				return d.candidate;
+			})
+			.entries(traceList);
+
+			console.log(dataGroup);
+
 			var vis = d3.select('#visualisation'),
-			WIDTH = 1000,
+			WIDTH = 2000,
 			HEIGHT = 500,
 			MARGINS = {
 				top: 20,
@@ -94,16 +144,8 @@ $(document).ready(function(){
 				bottom: 20,
 				left: 50
 			},
-			xRange = d3.scale.linear().range([MARGINS.left, WIDTH - MARGINS.right]).domain([d3.min(lineData, function(d) {
-				return d.x;
-			}), d3.max(lineData, function(d) {
-				return d.x;
-			})]),
-			yRange = d3.scale.linear().range([HEIGHT - MARGINS.top, MARGINS.bottom]).domain([d3.min(lineData, function(d) {
-				return d.y;
-			}), d3.max(lineData, function(d) {
-				return d.y;
-			})]),
+			xRange = d3.scale.linear().range([MARGINS.left, WIDTH - MARGINS.right]).domain([d3.min(traceList, mapX), d3.max(traceList, mapX)]),
+			yRange = d3.scale.linear().range([HEIGHT - MARGINS.top, MARGINS.bottom]).domain([d3.min(traceList, mapY), d3.max(traceList, mapY)]),
 			xAxis = d3.svg.axis()
 			.scale(xRange)
 			.tickSize(5)
@@ -126,17 +168,29 @@ $(document).ready(function(){
 
 			var lineFunc = d3.svg.line()
 			.x(function(d) {
-				return xRange(d.x);
+				return xRange(d.unix_time);
 			})
 			.y(function(d) {
-				return yRange(d.y);
+				return yRange(d.count);
 			})
 			.interpolate('linear');
 
-			vis.append('svg:path')
-			.attr('d', lineFunc(lineData))
-			.attr('stroke', 'blue')
-			.attr('stroke-width', 2)
-			.attr('fill', 'none');
+			// for(var i = 0; i < traceList; i++){
+			// 	vis.append('svg:path')
+			// 	.attr('d', lineFunc(traceList[i]))
+			// 	.attr('stroke', 'blue')
+			// 	.attr('stroke-width', 2)
+			// 	.attr('fill', 'none');
+			// }
+
+			dataGroup.forEach(function(d, i) {
+				vis.append('svg:path')
+				.attr('d', lineFunc(d.values))
+				.attr('stroke', function(d, j) {
+					return "hsl(" + Math.random() * 360 + ",100%,50%)";
+				})
+				.attr('stroke-width', 2)
+				.attr('fill', 'none');
+			});
 		}
 	})
