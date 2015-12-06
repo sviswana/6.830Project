@@ -44,9 +44,9 @@ def clientthread(conn):
     #infinite loop so that function do not terminate and thread do not end.
     while True:
         #Receiving from client
+        reply = ''
         data = conn.recv(1024)
         print data
-
         try:
             params = qe.deserialize(data)
             param_type = params[0]
@@ -70,10 +70,10 @@ def clientthread(conn):
                 reply = "Invalid arguments, should be start with SELECT, INSERT, or UPDATE"
             print reply
             conn.sendall(reply)
-            conn.close()
         except:
-            print 'Closing connection'
-            conn.close()
+            print 'ERROR'
+            #conn.close()
+    conn.close()
 
 #now keep talking with the client
 while 1:
