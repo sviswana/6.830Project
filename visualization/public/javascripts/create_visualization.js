@@ -1,12 +1,13 @@
 $(document).ready(function(){
-	candidateList = ["Hillary Clinton",
+	/*candidateList = ["Hillary Clinton",
 	"Carly Fiorina",
 	"Bernie Sanders",
 	"Marco Rubio", 
 	"Donald Trump", 
 	"Ted Cruz", 
 	"Ben Carson", 
-	"Rand Paul"];
+	"Rand Paul"];*/
+  candidateList = [];
 
 	timerange = [];
 	currentTime = 1448082159999; //TODO (change this) : new Date();
@@ -25,6 +26,7 @@ $(document).ready(function(){
 
 	function addToTraces(trace){
 		traces.push(trace);
+    //console.log(traces);
 		if(traces.length >= (candidateList.length * timerange.length)){
 			makeGraph(traces);
 		}
@@ -38,6 +40,16 @@ $(document).ready(function(){
 	};
 
 	$('#show_visualization').click(function(){
+    initializeTraces();
+    startTime = $("#start").val()
+    endTime = $("#end").val()
+    interval = $("#interval").val()
+
+    candidateList = [];
+    candidateList = $('input:checkbox:checked').map(function() {
+      return this.value.trim();
+    }).get();
+
 		//query = '3#1448082159999|Trump;';
 		// $.get('/select/' + encodeURIComponent('3#1448082159999|Trump;'), function(data){
 		// 	timestamp = 120;
@@ -66,8 +78,8 @@ $(document).ready(function(){
 									trace["unix_time"] = UNIX_timestamp_ms;
 									trace["count"]= result;
 
-									console.log(candidate.toString());
-									console.log(trace);
+									//console.log(candidate.toString());
+									//console.log(trace);
 
 									callback(trace);
 								});
@@ -75,13 +87,13 @@ $(document).ready(function(){
 
 					}
 
-					console.log("TL");
-					console.log(traces);
+					//console.log("TL");
+					//console.log(traces);
 
 
 
 				}
-				console.log("OUT");
+				//console.log("OUT");
 
 			})
 
@@ -127,6 +139,7 @@ function generateSelectQuery(UNIX_timestamp_ms, candidate){
 		}
 
 		function makeGraph(traceList){
+      console.log(candidateList)
 			var dataGroup = d3.nest()
 			.key(function(d) {
 				return d.candidate;
@@ -183,14 +196,62 @@ function generateSelectQuery(UNIX_timestamp_ms, candidate){
 			// 	.attr('fill', 'none');
 			// }
 
-			dataGroup.forEach(function(d, i) {
+function render(){
+  console.log("render: " + dataGroup);
+var path = vis.selectAll('path').data(dataGroup)
+console.log(path);
+
+path.attr('d', function(d){ return lineFunc(d.values);}).attr('stroke', function(d, j) {
+          return "hsl(" + Math.random() * 360 + ",100%,50%)";})
+.attr("data-legend",function(d) { console.log(d.key); return d.key}).attr('stroke-width', 3)
+        .attr('fill', 'none');
+
+path.enter().append('path').attr('d', function(d){ return lineFunc(d.values);})
+.attr('stroke', function(d, j) {
+          return "hsl(" + Math.random() * 360 + ",100%,50%)";})
+.attr("data-legend",function(d) { console.log(d.key); return d.key})
+.attr('stroke-width', 3)
+        .attr('fill', 'none');
+
+path.exit().remove();
+
+      legend = vis.append("g")
+    .attr("class","legend")
+    .attr("transform","translate(50,30)")
+    .style("font-size","12px")
+    .call(d3.legend)
+
+}
+
+render();
+
+ /*var candidate = vis.selectAll(".candidate")
+      .data(dataGroup)
+    .enter().append("g")
+      .attr("class", "candidate");
+
+    candidate.append("path")
+      .attr("class", "line")
+      .attr("d", function(d) { return lineFunc(d.values); })
+      .attr("data-legend",function(d) { console.log(d.key); return d.key})
+      .attr('stroke', function(d, j) {
+          return "hsl(" + Math.random() * 360 + ",100%,50%)";
+        });
+
+    candidate.attr("d", function(d) { return lineFunc(d.values); })
+
+
+      candidate.exit().remove();*/
+
+			/*dataGroup.forEach(function(d, i) {
 				vis.append('svg:path')
 				.attr('d', lineFunc(d.values))
 				.attr('stroke', function(d, j) {
 					return "hsl(" + Math.random() * 360 + ",100%,50%)";
 				})
+        .attr("data-legend",function(d) { return d.key})
 				.attr('stroke-width', 2)
 				.attr('fill', 'none');
-			});
+			});*/
 		}
 	})
