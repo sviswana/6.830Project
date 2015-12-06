@@ -161,17 +161,20 @@ function generateSelectQuery(UNIX_timestamp_ms, candidate){
 				bottom: 50,
 				left: 200
 			},
-			xRange = d3.scale.linear().range([MARGINS.left, WIDTH - MARGINS.right]).domain([d3.min(traceList, mapX), d3.max(traceList, mapX)]),
-			yRange = d3.scale.linear().range([HEIGHT - MARGINS.top, MARGINS.bottom]).domain([d3.min(traceList, mapY), d3.max(traceList, mapY)]),
+			xScale = d3.scale.linear().range([MARGINS.left, WIDTH - MARGINS.right]).domain([d3.min(traceList, mapX), d3.max(traceList, mapX)]),
+			yScale = d3.scale.linear().range([HEIGHT - MARGINS.top, MARGINS.bottom]).domain([d3.min(traceList, mapY), d3.max(traceList, mapY)]),
 			xAxis = d3.svg.axis()
-			.scale(xRange)
-			.tickSize(5)
-			.tickSubdivide(true),
+			.scale(xScale),
+			// .tickSize(5)
+			// .tickSubdivide(true),
 			yAxis = d3.svg.axis()
-			.scale(yRange)
-			.tickSize(5)
-			.orient('left')
-			.tickSubdivide(true);
+			.scale(yScale)
+			// .tickSize(5)
+			.orient('left');
+			// .tickSubdivide(true);
+
+			lSpace = WIDTH/dataGroup.length;
+
 
 			vis.append('svg:g')
 			.attr('class', 'x axis')
@@ -185,12 +188,14 @@ function generateSelectQuery(UNIX_timestamp_ms, candidate){
 
 			var lineFunc = d3.svg.line()
 			.x(function(d) {
-				return xRange(d.unix_time);
+				return xScale(d.unix_time);
 			})
 			.y(function(d) {
-				return yRange(d.count);
+				return yScale(d.count);
 			})
 			.interpolate('linear');
+
+
 
 			// for(var i = 0; i < traceList; i++){
 			// 	vis.append('svg:path')
@@ -201,8 +206,9 @@ function generateSelectQuery(UNIX_timestamp_ms, candidate){
 			// }
 
 			dataGroup.forEach(function(d, i) 
-				{	console.log("D");
-					console.log(d)
+			{	
+				console.log("D");
+				console.log(d)
 				vis.append('svg:path')
 				.attr('d', lineFunc(d.values))
 				.attr('stroke', function(d, j) {
@@ -210,6 +216,14 @@ function generateSelectQuery(UNIX_timestamp_ms, candidate){
 				})
 				.attr('stroke-width', 2)
 				.attr('fill', 'none');
+
+				vis.append("text")
+			    .attr("x", (lSpace / 2) + i * lSpace)
+			    .attr("y", HEIGHT)
+			    .style("fill", "black")
+			    .text(d.key);
 			});
+
+			console.log(vis);
 		}
 	})
