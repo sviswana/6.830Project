@@ -26,16 +26,33 @@ $(document).ready(function(){
 	function addToTraces(trace){
 		traces.push(trace);
 		if(traces.length >= (candidateList.length * timerange.length)){
+			traces.sort(function(a,b) {return (a.unix_time > b.unix_time) ? 1 : ((b.unix_time > a.unix_time) ? -1 : 0);} );
+			console.log(traces);
 			makeGraph(traces);
 		}
 
 	}
 
+	$('input[type=checkbox]').change(
+	    function(){
+	    	console.log("checkbox")
+	    	var id = $(this).attr('id');
+	    	var index = candidateList.indexOf(id);
 
-	var layout = {
-		title:'Click Buttons to Delete Traces',
-		showlegend:false
-	};
+	        if (this.checked) {
+	        	if(index <= -1){
+	        		candidateList.push(id);
+	        	}
+
+	        }
+	        else{
+	        	if(index > -1){
+	        		candidateList.splice(index, 1);
+	        	}
+
+	        }
+	        $('#show_visualization').click();
+    });
 
 	$('#show_visualization').click(function(){
 		//query = '3#1448082159999|Trump;';
@@ -66,8 +83,8 @@ $(document).ready(function(){
 									trace["unix_time"] = UNIX_timestamp_ms;
 									trace["count"]= result;
 
-									console.log(candidate.toString());
-									console.log(trace);
+									// console.log(candidate.toString());
+									// console.log(trace);
 
 									callback(trace);
 								});
@@ -75,8 +92,8 @@ $(document).ready(function(){
 
 					}
 
-					console.log("TL");
-					console.log(traces);
+					// console.log("TL");
+					// console.log(traces);
 
 
 
@@ -137,12 +154,12 @@ function generateSelectQuery(UNIX_timestamp_ms, candidate){
 
 			var vis = d3.select('#visualisation'),
 			WIDTH = 2000,
-			HEIGHT = 500,
+			HEIGHT = 500, //$('#visualisation').attr('height'),
 			MARGINS = {
-				top: 20,
-				right: 20,
-				bottom: 20,
-				left: 50
+				top: 50,
+				right: 50,
+				bottom: 50,
+				left: 200
 			},
 			xRange = d3.scale.linear().range([MARGINS.left, WIDTH - MARGINS.right]).domain([d3.min(traceList, mapX), d3.max(traceList, mapX)]),
 			yRange = d3.scale.linear().range([HEIGHT - MARGINS.top, MARGINS.bottom]).domain([d3.min(traceList, mapY), d3.max(traceList, mapY)]),
@@ -183,7 +200,9 @@ function generateSelectQuery(UNIX_timestamp_ms, candidate){
 			// 	.attr('fill', 'none');
 			// }
 
-			dataGroup.forEach(function(d, i) {
+			dataGroup.forEach(function(d, i) 
+				{	console.log("D");
+					console.log(d)
 				vis.append('svg:path')
 				.attr('d', lineFunc(d.values))
 				.attr('stroke', function(d, j) {
