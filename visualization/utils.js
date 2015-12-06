@@ -5,6 +5,7 @@ var utils = {};
   The caller of this function should return after calling
 */
 utils.sendSuccessResponse = function(res, content) {
+  
   res.status(200).json({
     success: true,
     content: content

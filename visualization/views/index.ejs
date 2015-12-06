@@ -1,17 +1,32 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <title><%= title %></title>
-    <link rel='stylesheet' href='/stylesheets/style.css' />
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
-    <script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
-    <script type="text/javascript" src="/javascripts/create_visualization.js"></script>
-  </head>
-  <body>
-    <h1><%= title %></h1>
-    <p>Welcome to <%= title %></p>
+<head>
+  <title><%= title %></title>
+  <link rel='stylesheet' href='/stylesheets/style.css' />
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+  <script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
+  <script type="text/javascript" src="/javascripts/create_visualization.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha256-KXn5puMvxCw+dAYznun+drMdG1IFl3agK0p/pqT9KAo= sha512-2e8qq0ETcfWRI4HJBzQiA3UoyFk6tbNyG+qSaIBZLyW9Xf3sWZHN/lxe9fTh1U45DpPf07yj94KsUHHWe4Yk1A==" crossorigin="anonymous"></script>
+</head>
+<body>
+  <h1><%= title %></h1>
+  <p>Welcome to <%= title %></p>
   <button id="show_visualization">Show Graph</button>
-	<svg id="visualisation" width="1000" height="500"></svg>
+  <svg id="visualisation" width="1000" height="500"></svg>
 
-  </body>
+  <ul>
+    <div class="btn-group" data-toggle="buttons">
+      <% for(var i=0; i<candidates.length; i++) { %>
+
+      <div class="checkbox">
+        <label class="btn btn-default active">
+          <input type="checkbox" checked="checked" id='<%= candidates[i] %>' value=""><%= candidates[i] %> 
+        </label>
+      </div>
+              <% } %>
+            </div>
+
+
+          </ul>
+        </body>
 </html>
