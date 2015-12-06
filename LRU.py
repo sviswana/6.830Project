@@ -21,4 +21,4 @@ class LRU:
                 self.cache.popitem(last=False)
         self.cache[key] = value
 
-#LRU = LRU(5)
+LRU = LRU(5)
