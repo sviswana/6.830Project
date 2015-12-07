@@ -162,12 +162,12 @@ class Database:
         if startTimestamp < self.incrementalCount["startTime"]:
             startTimestamp = self.incrementalCount["startTime"]
         if not endTimestamp/300 in self.incrementalCount:
-            return 0
+            return str(0)
         if not startTimestamp/300 in self.incrementalCount:
-            return 0
+            return str(0)
         endCounts = self.incrementalCount[endTimestamp/300][str(keyword)]
         startCounts = self.incrementalCount[startTimestamp/300 - 1][str(keyword)]
-        return endCounts - startCounts
+        return str(endCounts - startCounts)
 
     def selectFastRange(self,startTimestamp, endTimestamp, keyword):
         with open('accumulatedCounts.txt','r') as cumul_file:
