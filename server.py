@@ -65,6 +65,8 @@ def clientthread(conn):
         elif param_type == QueryType.UPDATE:
             reply = "updating"
             #reply = db.update(params[1:])
+        elif param_type == QueryType.SELECTALL:
+            reply = db.selectRangeForDisplay
         else:
             # throw exception
             reply = "Invalid arguments, should be start with SELECT, INSERT, or UPDATE"

@@ -38,23 +38,30 @@ $(document).ready(function(){
 	    	console.log("checkbox")
 	    	var id = $(this).attr('id');
 	    	var index = candidateList.indexOf(id);
+	    	var changed = false;
 
 	        if (this.checked) {
 	        	if(index <= -1){
 	        		candidateList.push(id);
+	        		changed = true;
 	        	}
 
 	        }
 	        else{
 	        	if(index > -1){
 	        		candidateList.splice(index, 1);
+	        		console.log(candidateList);
+	        		changed = true;
 	        	}
 
 	        }
-	        $('#show_visualization').click();
+	        if(changed){
+	        	$('#show_visualization').click();
+	        }
     });
 
 	$('#show_visualization').click(function(){
+		initializeTraces();
 		//query = '3#1448082159999|Trump;';
 		// $.get('/select/' + encodeURIComponent('3#1448082159999|Trump;'), function(data){
 		// 	timestamp = 120;
@@ -144,6 +151,8 @@ function generateSelectQuery(UNIX_timestamp_ms, candidate){
 		}
 
 		function makeGraph(traceList){
+
+			$('#visualisation').html("");
 			var dataGroup = d3.nest()
 			.key(function(d) {
 				return d.candidate;
@@ -156,10 +165,10 @@ function generateSelectQuery(UNIX_timestamp_ms, candidate){
 			WIDTH = 2000,
 			HEIGHT = 500, //$('#visualisation').attr('height'),
 			MARGINS = {
-				top: 50,
+				top: 0,
 				right: 50,
-				bottom: 50,
-				left: 200
+				bottom: 80,
+				left: 100
 			},
 			xScale = d3.scale.linear().range([MARGINS.left, WIDTH - MARGINS.right]).domain([d3.min(traceList, mapX), d3.max(traceList, mapX)]),
 			yScale = d3.scale.linear().range([HEIGHT - MARGINS.top, MARGINS.bottom]).domain([d3.min(traceList, mapY), d3.max(traceList, mapY)]),
