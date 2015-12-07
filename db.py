@@ -257,7 +257,7 @@ class Database:
                             dataMap = json.load(data_file)
                         except:
                             for i in range(t, endTimestamp+300, 300):
-                                finalList.append(str(i), str(0))
+                                finalList.append((str(i), str(0)))
                             return finalList
                         LRU.set(str(fileNumber), dataMap)
                 else:
@@ -266,11 +266,11 @@ class Database:
                     count=dataMap[bucketNumber][str(keyword)]
                     finalList.append((str(t), str(count)))
                 else:
-                    finalList.append(str(t),str(0))
+                    finalList.append((str(t),str(0)))
                 t = t+ tick
         if finalList == []:
             for i in range(t, endTimestamp+300, 300):
-                finalList.append(str(i), str(0))
+                finalList.append((str(i), str(0)))
             return finalList
         return finalList
 
