@@ -230,7 +230,6 @@ class Database:
         bucketMod = self.setWindow(5)
         [startFileNumber, startBucket] = self.getNames(startTimestamp) #convert bucket to string
         [endFileNumber, endBucket] = self.getNames(endTimestamp)
-        
         #If timestamps span more than a day, we need to ensure that we get all the buckets in the range
         t = startTimestamp
         finalList = []
