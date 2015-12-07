@@ -161,6 +161,10 @@ class Database:
             endTimestamp = self.incrementalCount["lastTime"]
         if startTimestamp < self.incrementalCount["startTime"]:
             startTimestamp = self.incrementalCount["startTime"]
+        if not endTimestamp/300 in self.incrementalCount:
+            return 0
+        if not startTimestamp/300 in self.incrementalCount:
+            return 0
         endCounts = self.incrementalCount[endTimestamp/300][str(keyword)]
         startCounts = self.incrementalCount[startTimestamp/300 - 1][str(keyword)]
         return endCounts - startCounts
