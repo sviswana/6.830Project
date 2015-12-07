@@ -15,6 +15,7 @@ class Database:
         self.candidateList = ["Hillary Clinton","Carly Fiorina","Bernie Sanders","Marco Rubio", "Donald Trump", "Ted Cruz", "Ben Carson", "Rand Paul"]
         self.incrementalCount = {}  
         self.incrementalCount["startTime"] =  int(time.time()) / 300    
+        self.incrementalCount["lastTime"] =  int(time.time()) / 300
 
     def get_data(self,timestamp,data):
         ##assumes timestamp is passed in seconds
