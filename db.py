@@ -153,12 +153,12 @@ class Database:
     def selectRangeForDisplay(self, startTimestamp, endTimestamp, keyword):
         #sample timestamp is 1449186990 (assuming was divided by 1000 already)
         tick = 5 * 60 #seconds to add - assuming window size is 5 here!
-        bucketMod = setWindow(5)
+        bucketMod = self.setWindow(5)
         [startFileNumber, startBucket] = self.getNames(startTimestamp) #convert bucket to string
         [endFileNumber, endBucket] = self.getNames(endTimestamp)
         
         #If timestamps span more than a day, we need to ensure that we get all the buckets in the range
-        t = timestamps[0]
+        t = startTimestamp
         finalList = []
         for fileNumber in range(startFileNumber, endFileNumber+1):
             if fileNumber == startFileNumber:

@@ -51,7 +51,6 @@ def clientthread(conn):
         params = qe.deserialize(data)
         param_type = params[0]
         print param_type
-        print param_type == QueryType.SELECT_RANGE_INTERVAL
         print 'PARAMS', params
         if param_type == QueryType.SELECT:
             reply = db.select(msToSec(params[1]), params[2])
@@ -80,7 +79,7 @@ def clientthread(conn):
     conn.close()
 
 def msToSec(milliseconds):
-    return milliseconds/1000.0
+    return milliseconds/1000
 #now keep talking with the client
 while 1:
     #wait to accept a connection - blocking call

@@ -76,43 +76,44 @@ $(document).ready(function(){
 	$('#show_visualization').click(function(){
 		initializeTraces();
 
-		//query = '3#1448082159999|Trump;';
-		// $.get('/select/' + encodeURIComponent('3#1448082159999|Trump;'), function(data){
-		// 	timestamp = 120;
-		// 	value = data["content"]["data"];
-		//     // old data
-		//     data = [{x: 1,y: 5},{x: 20,y: 20}, {x: 40,y: 10}, {x: 60,y: 40}, {x: 80,y: 100}, {x: 100,y: 60}]
-		//     // add new data point to end
-		//     data.push({x: timestamp, y: value})
-		//     makeGraph(data);
-		//   })
-	for(var i = 0; i < candidateList.length; i++){
-		var candidate = candidateList[i];
+		query = '4#1448081559999|1448082159999|Hillary Clinton;';
+		$.get('/select/' + encodeURIComponent(query), function(data){
+			console.log(data);
+			// timestamp = 120;
+			// value = data["content"]["data"];
+		 //    // old data
+		 //    data = [{x: 1,y: 5},{x: 20,y: 20}, {x: 40,y: 10}, {x: 60,y: 40}, {x: 80,y: 100}, {x: 100,y: 60}]
+		 //    // add new data point to end
+		 //    data.push({x: timestamp, y: value})
+		 //    makeGraph(data);
+		  })
+	// for(var i = 0; i < candidateList.length; i++){
+	// 	var candidate = candidateList[i];
 
 
-					// var trace = { "x" : [], "y" : [], "type" : "scatter", "line" : { color: 'rgb(55, 128, 191)',}};
+	// 				// var trace = { "x" : [], "y" : [], "type" : "scatter", "line" : { color: 'rgb(55, 128, 191)',}};
 
-					for(var j = 0; j < timerange.length; j++){
+	// 				for(var j = 0; j < timerange.length; j++){
 
-						(function(UNIX_timestamp_ms, candidate, callback){
-							query = generateSelectQuery(UNIX_timestamp_ms, candidate);
+	// 					(function(UNIX_timestamp_ms, candidate, callback){
+	// 						query = generateSelectQuery(UNIX_timestamp_ms, candidate);
 
-							$.get("/select/" + encodeURIComponent(query),
-								function(data){
-									var trace = {};
-									var result = data["content"]["data"];
-									trace["candidate"]  = candidate.toString();
-									trace["unix_time"] = UNIX_timestamp_ms;
-									trace["count"]= result;
+	// 						$.get("/select/" + encodeURIComponent(query),
+	// 							function(data){
+	// 								var trace = {};
+	// 								var result = data["content"]["data"];
+	// 								trace["candidate"]  = candidate.toString();
+	// 								trace["unix_time"] = UNIX_timestamp_ms;
+	// 								trace["count"]= result;
 
-									callback(trace);
-								});
-						})(timerange[j], candidate, addToTraces);
+	// 								callback(trace);
+	// 							});
+	// 					})(timerange[j], candidate, addToTraces);
 
-					}
+	// 				}
 
-				}
-				console.log("OUT");
+	// 			}
+	// 			console.log("OUT");
 
 			})
 

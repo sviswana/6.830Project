@@ -75,16 +75,17 @@ class QueryError(Exception):
 
 if __name__ =='__main__':
     qe = QueryEngine()
-    qt = QueryType.UPDATE
-    timestamp = "time"
-    keyword = "keyword"
+    qt = QueryType.SELECTRANGE
+    timestamp1 = 1448051559999
+    timestamp2 = 1448081559999
+    keyword = "Hillary Clinton"
     count = 1
-    query = [qt, timestamp, keyword, count]
+    query = [qt, timestamp1, timestamp2, keyword]
     # serialExpected = str(QueryType.UPDATE.value) + qe.QTYPE_SEPARATOR + timestamp + qe.DATA_SEPARATOR + keyword + qe.DATA_SEPARATOR + str(count) + qe.QUERY_SEPARATOR
-    serialProduced = qe.serializeJSON(query)
+    serialProduced = qe.serialize(query)
     print serialProduced
     # if not (serialExpected == serialProduced):
     #     raise QueryError("Error in format of query")
 
-    q =  qe.deserializeJSON(serialProduced)
+    q =  qe.deserialize(serialProduced)
     print q
