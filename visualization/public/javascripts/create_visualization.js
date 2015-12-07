@@ -26,8 +26,6 @@ $(document).ready(function(){
 	function addToTraces(trace){
 		traces.push(trace);
 		if(traces.length >= (candidateList.length * timerange.length)){
-			traces.sort(function(a,b) {return (a.unix_time > b.unix_time) ? 1 : ((b.unix_time > a.unix_time) ? -1 : 0);} );
-			console.log(traces);
 			makeGraph(traces);
 		}
 
@@ -60,6 +58,7 @@ $(document).ready(function(){
 	        }
     });
 
+
 	$('#show_visualization').click(function(){
 		initializeTraces();
 		//query = '3#1448082159999|Trump;';
@@ -90,19 +89,11 @@ $(document).ready(function(){
 									trace["unix_time"] = UNIX_timestamp_ms;
 									trace["count"]= result;
 
-									// console.log(candidate.toString());
-									// console.log(trace);
-
 									callback(trace);
 								});
 						})(timerange[j], candidate, addToTraces);
 
 					}
-
-					// console.log("TL");
-					// console.log(traces);
-
-
 
 				}
 				console.log("OUT");
@@ -163,27 +154,25 @@ function generateSelectQuery(UNIX_timestamp_ms, candidate){
 
 			var vis = d3.select('#visualisation'),
 			WIDTH = 2000,
-			HEIGHT = 500, //$('#visualisation').attr('height'),
+			HEIGHT = 500,
 			MARGINS = {
 				top: 0,
 				right: 50,
 				bottom: 80,
 				left: 100
+
 			},
-			xScale = d3.scale.linear().range([MARGINS.left, WIDTH - MARGINS.right]).domain([d3.min(traceList, mapX), d3.max(traceList, mapX)]),
-			yScale = d3.scale.linear().range([HEIGHT - MARGINS.top, MARGINS.bottom]).domain([d3.min(traceList, mapY), d3.max(traceList, mapY)]),
+			xRange = d3.scale.linear().range([MARGINS.left, WIDTH - MARGINS.right]).domain([d3.min(traceList, mapX), d3.max(traceList, mapX)]),
+			yRange = d3.scale.linear().range([HEIGHT - MARGINS.top, MARGINS.bottom]).domain([d3.min(traceList, mapY), d3.max(traceList, mapY)]),
 			xAxis = d3.svg.axis()
-			.scale(xScale),
-			// .tickSize(5)
-			// .tickSubdivide(true),
+			.scale(xRange)
+			.tickSize(5)
+			.tickSubdivide(true),
 			yAxis = d3.svg.axis()
-			.scale(yScale)
-			// .tickSize(5)
-			.orient('left');
-			// .tickSubdivide(true);
-
-			lSpace = WIDTH/dataGroup.length;
-
+			.scale(yRange)
+			.tickSize(5)
+			.orient('left')
+			.tickSubdivide(true);
 
 			vis.append('svg:g')
 			.attr('class', 'x axis')
@@ -197,14 +186,12 @@ function generateSelectQuery(UNIX_timestamp_ms, candidate){
 
 			var lineFunc = d3.svg.line()
 			.x(function(d) {
-				return xScale(d.unix_time);
+				return xRange(d.unix_time);
 			})
 			.y(function(d) {
-				return yScale(d.count);
+				return yRange(d.count);
 			})
 			.interpolate('linear');
-
-
 
 			// for(var i = 0; i < traceList; i++){
 			// 	vis.append('svg:path')
@@ -214,10 +201,7 @@ function generateSelectQuery(UNIX_timestamp_ms, candidate){
 			// 	.attr('fill', 'none');
 			// }
 
-			dataGroup.forEach(function(d, i) 
-			{	
-				console.log("D");
-				console.log(d)
+			dataGroup.forEach(function(d, i) {
 				vis.append('svg:path')
 				.attr('d', lineFunc(d.values))
 				.attr('stroke', function(d, j) {
@@ -225,14 +209,6 @@ function generateSelectQuery(UNIX_timestamp_ms, candidate){
 				})
 				.attr('stroke-width', 2)
 				.attr('fill', 'none');
-
-				vis.append("text")
-			    .attr("x", (lSpace / 2) + i * lSpace)
-			    .attr("y", HEIGHT)
-			    .style("fill", "black")
-			    .text(d.key);
 			});
-
-			console.log(vis);
 		}
 	})
