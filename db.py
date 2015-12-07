@@ -11,6 +11,7 @@ class Database:
     def __init__(self):
         self.counts = {"Hillary Clinton":0,"Carly Fiorina":0,"Bernie Sanders":0,"Marco Rubio":0, "Donald Trump":0, "Ted Cruz":0, "Ben Carson":0, "Rand Paul":0}
         self.runningMean = {"Hillary Clinton":0,"Carly Fiorina":0,"Bernie Sanders":0,"Marco Rubio":0, "Donald Trump":0, "Ted Cruz":0, "Ben Carson":0, "Rand Paul":0}
+        self.runningVar = {"Hillary Clinton":0,"Carly Fiorina":0,"Bernie Sanders":0,"Marco Rubio":0, "Donald Trump":0, "Ted Cruz":0, "Ben Carson":0, "Rand Paul":0}
         self.previousBucket = (int(time.time()) / 300) % 288
         self.candidateList = ["Hillary Clinton","Carly Fiorina","Bernie Sanders","Marco Rubio", "Donald Trump", "Ted Cruz", "Ben Carson", "Rand Paul"]
         self.incrementalCount = {}  
@@ -92,9 +93,13 @@ class Database:
             for candidate in self.candidateList:
                 if candidate in dataMap[str(self.previousBucket)]:
                     count = dataMap[str(self.previousBucket)][candidate]
+                    squaredCount = dataMap[str(self.previousBucket)][candidate] ** 2
                 else:
                     count = 0
+                    squaredCount = 0
                 newMean = self.updateMean(self.counts[str(candidate)]+1, self.runningMean[str(candidate)], count)
+                newVar = self.updateVar(self.counts[str(candidate)]+1, count, squaredCount)
+                self.runningVar[str(candidate)] = newVar
                 self.runningMean[str(candidate)] = newMean
                 self.counts[str(candidate)]+=1
                 if (timestamp/300 -1) not in self.incrementalCount:
@@ -104,6 +109,7 @@ class Database:
                 self.incrementalCount["lastTime"] = timestamp/300
             print("COUNTS: ", self.counts)
             print("RUNNING AVERAGE:", self.runningMean)
+            print("RUNNING VAR:", self.runningVar)
             print("INCREMEANL COUNT", self.incrementalCount)
             self.previousBucket = bucket
         #print 'dataMap', dataMap#str(dataMap).replace("u\'","\'")
@@ -131,6 +137,12 @@ class Database:
     
     def updateMean(self, currentCount, runningMean, newTerm):
         return runningMean + (float((newTerm - runningMean))/currentCount)
+
+    def updateVar(self, n, currentCount, currentSqCount):
+        if n == 1:
+            return 0
+        else:
+            return float(n*currentSqCount - currentCount*currentCount)/float(n * (n - 1))
 
     def getNames(self, timestamp):
         filename = timestamp / 86400
