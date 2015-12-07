@@ -1,5 +1,5 @@
 from enum import Enum
-
+import json
 
 class QueryEngine:
     def __init__(self):
@@ -20,6 +20,16 @@ class QueryEngine:
         serString =  self.QTYPE_SEPARATOR.join(str(val) for val in [qType.value, serString])
         return serString + self.QUERY_SEPARATOR;
 
+    #Do not use
+    def serializeJSON(self, query):
+        if not query:
+            raise QueryError("No data provided for query");
+        qType, dateTime, keyword = query[0], query[1], query[2]
+
+        queryDict = {"type": query[0].value, "timestamp": query[1], "keyword" : query[2], "data": query[1:]}
+
+        return json.dumps(queryDict)
+
     def deserialize(self, fullquery):
         print "fullquery", fullquery
         if not fullquery:
@@ -30,6 +40,7 @@ class QueryEngine:
 
 
         extractedQuery = data.split(self.DATA_SEPARATOR)
+
         for index in xrange(0, len(list(extractedQuery))):
             try:
                 int_val = int(extractedQuery[index])
@@ -39,10 +50,21 @@ class QueryEngine:
         extractedQuery.insert(0, qtype)
         return extractedQuery
 
+    #do not use
+    def deserializeJSON(self, fullquery):
+        print "fullquery", fullquery
+        if not fullquery:
+            raise QueryError("No data provided for query");
+        queryDict = json.loads(fullquery);
+        queryDict["type"] = QueryType(queryDict["type"])
+        return queryDict
+
 class QueryType(Enum):
     UPDATE = 1
     INSERT = 2
     SELECT = 3
+    SELECTRANGE = 4
+
 
 class QueryError(Exception):
      def __init__(self, value):
@@ -58,10 +80,11 @@ if __name__ =='__main__':
     keyword = "keyword"
     count = 1
     query = [qt, timestamp, keyword, count]
-    serialExpected = str(QueryType.UPDATE.value) + qe.QTYPE_SEPARATOR + timestamp + qe.DATA_SEPARATOR + keyword + qe.DATA_SEPARATOR + str(count) + qe.QUERY_SEPARATOR
-    serialProduced = qe.serialize(query)
-    if not (serialExpected == serialProduced):
-        raise QueryError("Error in format of query")
+    # serialExpected = str(QueryType.UPDATE.value) + qe.QTYPE_SEPARATOR + timestamp + qe.DATA_SEPARATOR + keyword + qe.DATA_SEPARATOR + str(count) + qe.QUERY_SEPARATOR
+    serialProduced = qe.serializeJSON(query)
+    print serialProduced
+    # if not (serialExpected == serialProduced):
+    #     raise QueryError("Error in format of query")
 
-    print qe.deserialize(serialExpected)
-    print query
+    q =  qe.deserializeJSON(serialProduced)
+    print q

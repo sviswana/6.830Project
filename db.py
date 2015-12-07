@@ -56,6 +56,7 @@ class Database:
         filename = timestamp / 86400
         tempTime = timestamp / 300
         bucket = tempTime % 288
+        print filename
         if not os.path.isfile(str(filename)+'.txt'):
             print 'file doesnt exist'
             dataMap = {}
@@ -188,6 +189,48 @@ class Database:
                     
         return finalList
 
+    def selectRangeAndInterval(self, startTime, endTime, interval, keyword):
+        tick = interval * 60
+        numBuckets = interval / 5
+
+        [startFileNumber, startBucket] = self.getNames(startTime) #convert bucket to string
+        [endFileNumber, endBucket] = self.getNames(endTime)
+        print startFileNumber, endFileNumber
+
+#If timestamps span more than a day, we need to ensure that we get all the buckets in the range
+        t = startTime
+        finalList = []
+        for fileNumber in range(startFileNumber, endFileNumber+1):
+            if fileNumber == startFileNumber:
+                startB = startBucket
+                if startFileNumber==endFileNumber:
+                    endB = endBucket
+                else:
+                    endB = bucketMod-1 
+            elif fileNumber == endFileNumber+1:
+                startB = 0
+                endB = endBucket
+            else:
+                startB = 0
+                endB = bucketMod -1
+            for bucketNumber in range(startB, endB+1, numBuckets):
+
+                bucketNumber = str(bucketNumber)
+                if LRU.get(str(fileNumber)) == -1:
+                    with open(str(fileNumber)+'.txt') as data_file:
+                        dataMap = json.load(data_file)
+                        LRU.set(str(fileNumber), dataMap)
+                else:
+                    dataMap = LRU.get(str(fileNumber))
+                total_count = 0
+                for bucket in range(int(bucketNumber), int(bucketNumber) + numBuckets):
+                    if str(bucket) in dataMap and str(keyword) in dataMap[str(bucket)]:
+                        count=dataMap[str(bucket)][str(keyword)]
+                        total_count += count
+                finalList.append((t, total_count))
+                t = t+ tick
+                    
+        return finalList
     
     #helper function if we want to change window size for inserting in future
     def setWindow(self, windowSize):
@@ -196,7 +239,6 @@ db = Database()
 
 #print db.selectRange(1448082159999/1000, 1448081559999/1000, 'Carly Fiorina')
 names = ['Hillary Clinton','Carly Fiorina','Bernie Sanders','BernieSanders','Marco Rubio','Donald Trump','Ted Cruz','Ben Carson','Rand Paul']
-
 '''
 count = 2500
 for name in names:   
