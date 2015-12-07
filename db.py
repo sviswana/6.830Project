@@ -27,6 +27,7 @@ class Database:
                 currentMap = json.load(currentCounts_file)
             except:
                 currentMap = {}
+                currentMap["firstTime"] = startTimestamp
             #go through each bucket
             for bucket in range(0,288):
                 currentMap[startTimestamp] = {}
@@ -42,12 +43,9 @@ class Database:
                         else:
                             currentMap[startTimestamp][candidate] = currentMap[startTimestamp - 300][candidate]                 
                 startTimestamp += 300
+            currentMap["lastTime"] = startTimestamp
         with open('accumulatedCounts.txt','w') as updated_file:
             json.dump(currentMap, updated_file)
-
-    
-
-
     def insert(self,timestamp, keyword, count):
         ##assume values is coming in the python form:
         ##[('clinton', 1),('sanders',1)]
@@ -120,9 +118,18 @@ class Database:
             return [timestamp, 0]
             
     def selectFastRange(self,startTimestamp, endTimestamp, keyword):
-
         with open('accumulatedCounts.txt','r') as cumul_file:
-            dataMap = json.load(cumul_file)
+            cumulMap = json.load(cumul_file)
+            startTimestamp = (startTimestamp / 300) * 300
+            endTimestamp = (endTimestamp / 300) * 300
+            if endTimestamp > cumulMap["lastTime"]:
+                endTimestamp = cumulMap["lastTime"]
+            if startTimestamp < cumulMap["firstTime"]:
+                startTimestamp = cumulMap["firstTime"]
+            last = cumulMap[str(endTimestamp)][str(keyword)]
+            start = cumulMap[str(startTimestamp - 300)][str(keyword)]
+            return last - start
+
 
 
     #for right now, support start and end timestamp, and one keyword
@@ -246,6 +253,7 @@ class Database:
         return 24*60 / windowSize
 db = Database()
 
+print db.selectFastRange(1448081400, 1448083000, 'Carly Fiorina')
 print db.selectRange( 1448081559999/1000, 1448082159999/1000,'Carly Fiorina')
 names = ['Hillary Clinton','Carly Fiorina','Bernie Sanders','BernieSanders','Marco Rubio','Donald Trump','Ted Cruz','Ben Carson','Rand Paul']
 '''
