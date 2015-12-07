@@ -5,7 +5,7 @@ import random
 #[update <timestamp> Hillary 5]
 from LRU import LRU
 class Database:
-        
+    candidateList = ["Hillary Clinton","Carly Fiorina","Bernie Sanders","Marco Rubio", "Donald Trump", "Ted Cruz", "Ben Carson", "Rand Paul"]
     def get_data(self,timestamp,data):
         ##assumes timestamp is passed in seconds
         filename = timestamp / 86400
@@ -13,6 +13,26 @@ class Database:
         
         with open(str(filename)+'.txt', 'a') as outfile:
             json.loads(data)
+
+    '''
+    def accumulateFile(self, fileName):
+        #Load the file we want to accumulate values for
+        with open(fileName) as current_file:
+            dataMap = json.load(current_file)
+
+        startTimestamp = int(filename[:-4]) * 86400
+        #load the accumulated counts file
+        with open('accumulatedCounts.txt') as currentCounts_file:
+            currentMap = json.load(currentCounts_file)
+            for i in range(0,288):
+                for candidate in candidateList:
+                    if candidate in dataMap[str(i)]:
+                        currentMap[] += currentMap[startTimestamp - ]
+                for candidate in dataMap[str(i)]:
+                    dataMap[i]
+                startTimestamp +=300
+
+    '''
 
 
     def insert(self,timestamp, keyword, count):
@@ -86,10 +106,11 @@ class Database:
         else:
             return str(0)
             
+
     #for right now, support start and end timestamp, and one keyword
-    def selectRange(self, timestamps, keyword):
-        [startFileNumber, startBucket] = getNames(timestamps[0]) #convert bucket to string
-        [endFileNumber, endBucket] = getNames(timestamps[1])
+    def selectRange(self, startTimestamp, endTimestamp, keyword):
+        [startFileNumber, startBucket] = getNames(startTimestamp) 
+        [endFileNumber, endBucket] = getNames(endTimestamp)
         aggregateCount = 0
         #If timestamps span more than a day, we need to ensure that we get all the buckets in the range
         for fileNumber in range(startFileNumber, endFileNumber+1):
@@ -115,12 +136,12 @@ class Database:
         return str(aggregateCount)
         
         #windowSize can be 
-    def selectRangeForDisplay(self, timestamps, keyword):
+    def selectRangeForDisplay(self, startTimestamp, endTimestamp, keyword):
         #sample timestamp is 1449186990 (assuming was divided by 1000 already)
         tick = 5 * 60 #seconds to add - assuming window size is 5 here!
         bucketMod = setWindow(5)
-        [startFileNumber, startBucket] = getNames(timestamps[0]) #convert bucket to string
-        [endFileNumber, endBucket] = getNames(timestamps[1])
+        [startFileNumber, startBucket] = getNames(startTimestamp) #convert bucket to string
+        [endFileNumber, endBucket] = getNames(endTimestamp)
         
         #If timestamps span more than a day, we need to ensure that we get all the buckets in the range
         t = timestamps[0]
@@ -202,6 +223,7 @@ class Database:
         return 24*60 / windowSize
 db = Database()
 
+'''
 names = ['Hillary Clinton','Carly Fiorina','Bernie Sanders','BernieSanders','Marco Rubio','Donald Trump','Ted Cruz','Ben Carson','Rand Paul']
 
 """
@@ -228,5 +250,5 @@ for name in names:
     count+=random.randint(1000,5000)
 """
 
-
+'''
 
