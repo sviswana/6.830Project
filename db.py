@@ -98,7 +98,7 @@ class Database:
                 if (timestamp/300 -1) not in self.incrementalCount:
                     self.incrementalCount[timestamp/300] = 0
                 else:
-                    self.incrementalCount[timestamp/300][candidate] = self.incrementalCount[timestamp/300 - 1] +count
+                    self.incrementalCount[timestamp/300][candidate] = self.incrementalCount[timestamp/300 - 1][candidate] +count
 
             print("COUNTS: ", self.counts)
             print("RUNNING AVERAGE:", self.runningMean)
