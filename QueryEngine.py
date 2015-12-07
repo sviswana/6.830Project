@@ -65,6 +65,7 @@ class QueryType(Enum):
     SELECT = 3
     SELECTRANGE = 4
     SERVER_REPLY = 5
+    INC_AVG = 6
 
 
 class QueryError(Exception):

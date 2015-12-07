@@ -77,6 +77,17 @@ $(document).ready(function(){
 		});
 
 
+ $('#get_inc_avg').click(function(){
+    candidate = $('input[type=radio]:checked').attr('id');
+
+    query = '6#' + candidate + ";";
+
+    $.get("/select/" + encodeURIComponent(query), function(data){
+      $("#inc_avg").text(data["content"]["data"]);
+      console.log(data["content"]["data"])
+    });
+    
+ })
 	$('#submit_query').click(function(){
 		startTime = $("#start").val();
 		endTime = $("#end").val();
@@ -86,7 +97,7 @@ $(document).ready(function(){
 		query = '4#' + startTime + '|' + endTime + '|' + interval + '|' + candidate;
 
 		$.get("/select/" + encodeURIComponent(query), function(data){
-			console.log(data)
+			console.log(data["content"]["data"]);
 		});
 
 	})
@@ -217,7 +228,7 @@ function serialize(QueryType_value, data){
 			console.log(dataGroup);
 
 			var vis = d3.select('#visualisation'),
-			WIDTH = 2000,
+			WIDTH = 1000,
 			HEIGHT = 500,
 			MARGINS = {
 				top: 0,

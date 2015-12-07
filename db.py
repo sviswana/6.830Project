@@ -178,7 +178,7 @@ class Database:
         return str(float(totalCounts) / buckets)
 
     def getRunningAverage(self, candidate):
-        return float(self.runningMean[candidate])
+        return str(self.runningMean[candidate])
 
     #for right now, support start and end timestamp, and one keyword
     def selectRange(self, startTimestamp, endTimestamp, keyword):
