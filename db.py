@@ -2,10 +2,18 @@ import json
 import os
 import ast
 import random
+import time
 #[update <timestamp> Hillary 5]
 from LRU import LRU
 class Database:
-    candidateList = ["Hillary Clinton","Carly Fiorina","Bernie Sanders","Marco Rubio", "Donald Trump", "Ted Cruz", "Ben Carson", "Rand Paul"]
+    
+
+    def __init__(self):
+        self.counts = {"Hillary Clinton":0,"Carly Fiorina":0,"Bernie Sanders":0,"Marco Rubio":0, "Donald Trump":0, "Ted Cruz":0, "Ben Carson":0, "Rand Paul":0}
+        self.runningMean = {"Hillary Clinton":0,"Carly Fiorina":0,"Bernie Sanders":0,"Marco Rubio":0, "Donald Trump":0, "Ted Cruz":0, "Ben Carson":0, "Rand Paul":0}
+        self.previousBucket = (int(time.time()) / 300) % 288
+        self.candidateList = ["Hillary Clinton","Carly Fiorina","Bernie Sanders","Marco Rubio", "Donald Trump", "Ted Cruz", "Ben Carson", "Rand Paul"]
+
     def get_data(self,timestamp,data):
         ##assumes timestamp is passed in seconds
         filename = timestamp / 86400
@@ -31,7 +39,7 @@ class Database:
             #go through each bucket
             for bucket in range(0,288):
                 currentMap[startTimestamp] = {}
-                for candidate in candidateList:
+                for candidate in self.candidateList:
                     if candidate in dataMap[str(bucket)]:
                         if not (startTimestamp-300) in currentMap:
                             currentMap[startTimestamp][candidate] = dataMap[str(bucket)][candidate]
@@ -46,13 +54,18 @@ class Database:
             currentMap["lastTime"] = startTimestamp
         with open('accumulatedCounts.txt','w') as updated_file:
             json.dump(currentMap, updated_file)
+
+
+
     def insert(self,timestamp, keyword, count):
         ##assume values is coming in the python form:
         ##[('clinton', 1),('sanders',1)]
         ##do we want to store individual timestamps as well
+        
         filename = timestamp / 86400
         tempTime = timestamp / 300
         bucket = tempTime % 288
+
         print filename
         if not os.path.isfile(str(filename)+'.txt'):
             print 'file doesnt exist'
@@ -68,7 +81,23 @@ class Database:
                 dataMap = json.load(data_file)
                 LRU.set(str(filename), dataMap)
         else:
-            dataMap = LRU.get(str(filename))       
+            dataMap = LRU.get(str(filename))    
+        print "current bucket", bucket
+        print "previous bucket", self.previousBucket
+        if bucket != self.previousBucket:
+
+            for candidate in self.candidateList:
+                if candidate in dataMap[str(self.previousBucket)]:
+                    count = dataMap[str(self.previousBucket)][candidate]
+                else:
+                    count = 0
+                newMean = self.updateMean(self.counts[str(candidate)]+1, self.runningMean[str(candidate)], count)
+                self.runningMean[str(candidate)] = newMean
+                self.counts[str(candidate)]+=1   
+
+            print("COUNTS: ", self.counts)
+            print("RUNNING AVERAGE:", self.runningMean)
+            self.previousBucket = bucket
         #print 'dataMap', dataMap#str(dataMap).replace("u\'","\'")
         print "bucket", bucket
         keywords = dataMap[str(bucket)]
@@ -91,7 +120,9 @@ class Database:
             #print dataMap
             json.dump(dataMap, outfile) ## we don't want to load it every time. 
         return True
-
+    
+    def updateMean(self, currentCount, runningMean, newTerm):
+        return runningMean + (float((newTerm - runningMean))/currentCount)
 
     def getNames(self, timestamp):
         filename = timestamp / 86400
@@ -130,7 +161,13 @@ class Database:
             start = cumulMap[str(startTimestamp - 300)][str(keyword)]
             return last - start
 
+    def getAverage(self, startTimestamp, endTimestamp, keyword):
+        totalCounts = selectFastRange(startTimestamp, endTimestamp, keyword)
+        buckets = (endTimestamp - startTimestamp) / (60*5)
+        return str(float(totalCounts) / buckets)
 
+    def getRunningAverage(self, candidate):
+        return float(self.runningMean[candidate])
 
     #for right now, support start and end timestamp, and one keyword
     def selectRange(self, startTimestamp, endTimestamp, keyword):
