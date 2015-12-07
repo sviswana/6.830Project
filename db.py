@@ -271,7 +271,7 @@ class Database:
                 t = t+ tick
         if finalList == []:
             for i in range(t, endTimestamp+300, 300):
-                finalList.append(str(i), str(0))
+                finalList.append((str(i), str(0)))
             return finalList
         return finalList
 
