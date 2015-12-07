@@ -193,7 +193,7 @@ class Database:
                     dataMap = LRU.get(str(fileNumber))
                 if bucketNumber in dataMap and str(keyword) in dataMap[bucketNumber]:
                     count=dataMap[bucketNumber][str(keyword)]
-                    finalList.append((t, count))
+                    finalList.append((str(t), str(count)))
                 t = t+ tick
                     
         return finalList
