@@ -77,6 +77,32 @@ $(document).ready(function(){
 		});
 
 
+ $('#get_inc_avg').click(function(){
+    candidate = $('input[type=radio]:checked').attr('id');
+
+    query = '6#' + candidate + ";";
+
+    $.get("/select/" + encodeURIComponent(query), function(data){
+      $("#inc_avg").text(data["content"]["data"]);
+      console.log(data["content"]["data"])
+    });
+    
+ })
+
+  $('#get_inc_count').click(function(){
+    candidate = $('input[type=radio]:checked').attr('id');
+    startTime = $("#start").val();
+    endTime = $("#end").val();
+
+    query = '7#' + startTime + '|' + endTime + '|' + candidate + ";";
+
+
+    $.get("/select/" + encodeURIComponent(query), function(data){
+      $("#inc_count").text(data["content"]["data"]);
+      console.log(data["content"]["data"])
+    });
+    
+ })
 	$('#submit_query').click(function(){
 		startTime = $("#start").val();
 		endTime = $("#end").val();
@@ -86,7 +112,7 @@ $(document).ready(function(){
 		query = '4#' + startTime + '|' + endTime + '|' + interval + '|' + candidate;
 
 		$.get("/select/" + encodeURIComponent(query), function(data){
-			console.log(data)
+			console.log(data["content"]["data"]);
 		});
 
 	})
@@ -150,9 +176,10 @@ $(document).ready(function(){
 								for(var j = 0; j < tupleList.length; j++){
 									var trace = {};
 									var tuple = detuple(tupleList[j]);
+                  console.log(tuple[0], convertToInt(tuple[0]))
 									trace["candidate"]  = candidate.toString();
-									trace["unix_time"] = tuple[0];
-									trace["count"]= tuple[1];
+									trace["unix_time"] = convertToInt(tuple[0]);
+									trace["count"]= convertToInt(tuple[1]);
 									traceList.push(trace);
 								}
 
@@ -164,6 +191,10 @@ $(document).ready(function(){
 				console.log("OUT");
 
 			})
+
+function convertToInt(timeString){
+  return timeString.substring(1, timeString.length-1) * 1;
+}
 
 function serialize(QueryType_value, data){
 			query = QueryType_value; //to Select single datapoint
