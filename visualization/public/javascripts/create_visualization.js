@@ -93,6 +93,11 @@ $(document).ready(function(){
     //query = '4#1449360000000|1449361000000|10|"Hillary Clinton;"'
     $('#show_visualization').click(function(){
     	initializeTraces();
+    	interval = parseInt($('#interval').val());
+    	startUNIX = parseInt($('#start').val());
+
+    	endUNIX = parseInt($('#end').val());
+
 
 		// query = '4#1448081559999|1448082159999|Hillary Clinton;';
 		// $.get('/select/' + encodeURIComponent(query), function(data){
@@ -212,10 +217,10 @@ function serialize(QueryType_value, data){
 			console.log(dataGroup);
 
 			var vis = d3.select('#visualisation'),
-			WIDTH = 2000,
-			HEIGHT = 500,
+			WIDTH = 1500,
+			HEIGHT = 800,
 			MARGINS = {
-				top: 0,
+				top: 50,
 				right: 50,
 				bottom: 50,
 				left: 100
