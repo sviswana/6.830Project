@@ -59,8 +59,23 @@ $(document).ready(function(){
     });
 
 
+  $('#submit_query').click(function(){
+    startTime = $("#start").val();
+    endTime = $("#end").val();
+    interval = $("#interval").val();
+    candidate = "Hillary Clinton"
+
+    query = '4#' + startTime + '|' + endTime + '|' + interval + '|' + candidate;
+
+    $.get("/select/" + encodeURIComponent(query), function(data){
+          console.log(data)
+        });
+
+  })
+    //query = '4#1449360000000|1449361000000|10|"Hillary Clinton;"'
 	$('#show_visualization').click(function(){
 		initializeTraces();
+
 		//query = '3#1448082159999|Trump;';
 		// $.get('/select/' + encodeURIComponent('3#1448082159999|Trump;'), function(data){
 		// 	timestamp = 120;
@@ -81,6 +96,7 @@ $(document).ready(function(){
 
 						(function(UNIX_timestamp_ms, candidate, callback){
 							query = generateSelectQuery(UNIX_timestamp_ms, candidate);
+
 							$.get("/select/" + encodeURIComponent(query),
 								function(data){
 									var trace = {};

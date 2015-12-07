@@ -12,6 +12,16 @@
 <body>
   <h1><%= title %></h1>
   <p>Welcome to <%= title %></p>
+    Start time: <input type="text" id="start" value = '1449360000000'>
+  End time: <input type="text" id="end" value = '1449361000000'>
+  Interval: <select id = "interval"> min
+  <option value=5>5</option>
+  <option value=10>10</option>
+  <option value=15>15</option>
+  <option value=20>20</option>
+</select>
+  <button id="submit_query">Submit Query</button>
+
   <button id="show_visualization">Show Graph</button>
   <svg id="visualisation" width="1000" height="500"></svg>
 

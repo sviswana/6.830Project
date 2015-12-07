@@ -50,6 +50,8 @@ def clientthread(conn):
         
         params = qe.deserialize(data)
         param_type = params[0]
+        print param_type
+        print param_type == QueryType.SELECT_RANGE_INTERVAL
         print 'PARAMS', params
         if param_type == QueryType.SELECT:
             reply = db.select(msToSec(params[1]), params[2])
