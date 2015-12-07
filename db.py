@@ -115,10 +115,15 @@ class Database:
         else:
             dataMap = LRU.get(str(filename))
         if bucket in dataMap and keyword in dataMap[bucket]:
-            return str(dataMap[bucket][keyword])
+            return [timestamp, dataMap[bucket][keyword]]
         else:
-            return str(0)
+            return [timestamp, 0]
             
+    def selectFastRange(self,startTimestamp, endTimestamp, keyword):
+
+        with open('accumulatedCounts.txt','r') as cumul_file:
+            dataMap = json.load(cumul_file)
+
 
     #for right now, support start and end timestamp, and one keyword
     def selectRange(self, startTimestamp, endTimestamp, keyword):
@@ -241,7 +246,7 @@ class Database:
         return 24*60 / windowSize
 db = Database()
 
-#print db.selectRange(1448082159999/1000, 1448081559999/1000, 'Carly Fiorina')
+print db.selectRange( 1448081559999/1000, 1448082159999/1000,'Carly Fiorina')
 names = ['Hillary Clinton','Carly Fiorina','Bernie Sanders','BernieSanders','Marco Rubio','Donald Trump','Ted Cruz','Ben Carson','Rand Paul']
 '''
 count = 2500
