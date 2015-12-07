@@ -35,43 +35,44 @@ class TweetListener(StreamListener):
         print 'START'
         newdata = json.loads(data)
         keywords = Constants.KEYWORDS
-        text = newdata["text"]
-        
-        #print 'DATA', data
-        timestamp = newdata["timestamp_ms"]
-        keywordMap = {}
-        text = text.replace("'", "")
-        # print 'TEXT', text
-        for word in keywords:
-            #print "word", word
-            #print 'text', text
-            wordList = keywords[word]
+        if "text" in newdata:
+            text = newdata["text"]
+            
+            #print 'DATA', data
+            timestamp = newdata["timestamp_ms"]
+            keywordMap = {}
+            text = text.replace("'", "")
+            # print 'TEXT', text
+            for word in keywords:
+                #print "word", word
+                #print 'text', text
+                wordList = keywords[word]
 
-            if self.checkWords(wordList,text):
-                if not word in keywordMap:
-                    keywordMap[word]=1
-                else:
-                    keywordMap[word]+=1
-            # print "keyword map", keywordMap
-        currMax = 0
-        maxKeyWord = ''
-        for word in keywordMap.keys():
-            if keywordMap[word] > currMax:
-                currMax = keywordMap[word]
-                maxKeyWord = word
-        print keywordMap
-        
-        queryString = self.queryEngine.serialize([QueryType.INSERT, timestamp, maxKeyWord, 1])
-        print queryString
-        self.sock.send(queryString)
+                if self.checkWords(wordList,text):
+                    if not word in keywordMap:
+                        keywordMap[word]=1
+                    else:
+                        keywordMap[word]+=1
+                # print "keyword map", keywordMap
+            currMax = 0
+            maxKeyWord = ''
+            for word in keywordMap.keys():
+                if keywordMap[word] > currMax:
+                    currMax = keywordMap[word]
+                    maxKeyWord = word
+            print keywordMap
+            
+            queryString = self.queryEngine.serialize([QueryType.INSERT, timestamp, maxKeyWord, 1])
+            print queryString
+            self.sock.send(queryString)
 
 
- #       df1= json.loads(data)
- #       print "df1", df1
- #       df = DataFrame(df1)
-        #print "df", df
- #       df.to_excel('twitter-excel.xlsx', sheet_name='sheet1', index=False)
-        return True
+     #       df1= json.loads(data)
+     #       print "df1", df1
+     #       df = DataFrame(df1)
+            #print "df", df
+     #       df.to_excel('twitter-excel.xlsx', sheet_name='sheet1', index=False)
+            return True
 
     def on_error(self, status):
         print status
