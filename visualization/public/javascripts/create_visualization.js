@@ -1,14 +1,17 @@
 $(document).ready(function(){
-	candidateList = ["Hillary Clinton",
-	"Carly Fiorina",
-	"Bernie Sanders",
-	"Marco Rubio", 
-	"Donald Trump", 
-	"Ted Cruz", 
-	"Ben Carson", 
-	"Rand Paul"];
+	// candidateList = ["Hillary Clinton",
+	// "Carly Fiorina",
+	// "Bernie Sanders",
+	// "Marco Rubio", 
+	// "Donald Trump", 
+	// "Ted Cruz", 
+	// "Ben Carson", 
+	// "Rand Paul"];
+	candidateList = [];
+
 
 	timerange = [];
+	interval = 300000;
 	currentTime = 1448082159999; //TODO (change this) : new Date();
 	DATA_SEPARATOR = "|";
 	QTYPE_SEPARATOR = "#";
@@ -16,114 +19,153 @@ $(document).ready(function(){
 	traces = []
 
 	for( var i = 0; i < 5; i++){
-		timerange.push(currentTime - (i * 300000));
+		timerange.push(currentTime - (i * interval));
 	}
-
+	endUNIX = timerange[0];
+	startUNIX = timerange[timerange.length - 1];
 	function initializeTraces(){
 		traces = [];
 	}
 
-	function addToTraces(trace){
-		traces.push(trace);
-		if(traces.length >= (candidateList.length * timerange.length)){
+	function clearCandidates(){
+		candidateList = [];
+	}
+	function addToTraces(traceList){
+		// console.log(candidateList.length * ((endUNIX - startUNIX)/interval) + 1);
+		traces = traces.concat(traceList);
+		if(traces.length >= (candidateList.length * (((endUNIX - startUNIX)/interval) + 1 ) )){
 			makeGraph(traces);
 		}
 
 	}
 
-	$('input[type=checkbox]').change(
-	    function(){
-	    	console.log("checkbox")
-	    	var id = $(this).attr('id');
-	    	var index = candidateList.indexOf(id);
-	    	var changed = false;
+	function deserialize(fullquery){
+		var query = fullquery.split(QUERY_SEPARATOR.toString())[0];
+		var data = query.split(self.QTYPE_SEPARATOR)[1];
+		var tupleList =  data.split(self.DATA_SEPARATOR);
+		return tupleList
+	}
 
-	        if (this.checked) {
-	        	if(index <= -1){
-	        		candidateList.push(id);
-	        		changed = true;
-	        	}
+	function detuple(tuple){
+		return tuple.split(")")[0].split("(")[1].split(", ");
+	}
 
-	        }
-	        else{
-	        	if(index > -1){
-	        		candidateList.splice(index, 1);
-	        		console.log(candidateList);
-	        		changed = true;
-	        	}
+	$('input[type=radio]').change(
+		function(){
+			clearCandidates();
+			var id = $(this).attr('id');
+			var index = candidateList.indexOf(id);
+			var changed = false;
+			if (this.checked) {
+				if(index <= -1){
+					candidateList.push(id);
+					changed = true;
+				}
 
-	        }
-	        if(changed){
-	        	$('#show_visualization').click();
-	        }
-    });
+			}
+			else{
+				if(index > -1){
+					candidateList.splice(index, 1);
+					console.log(candidateList);
+					changed = true;
+				}
+
+			}
+			if(changed){
+				$('#show_visualization').click();
+			}
+		});
 
 
-  $('#submit_query').click(function(){
-    startTime = $("#start").val();
-    endTime = $("#end").val();
-    interval = $("#interval").val();
-    candidate = "Hillary Clinton"
+	$('#submit_query').click(function(){
+		startTime = $("#start").val();
+		endTime = $("#end").val();
+		interval = $("#interval").val();
+		candidate = "Hillary Clinton"
 
-    query = '4#' + startTime + '|' + endTime + '|' + interval + '|' + candidate;
+		query = '4#' + startTime + '|' + endTime + '|' + interval + '|' + candidate;
 
-    $.get("/select/" + encodeURIComponent(query), function(data){
-          console.log(data)
-        });
+		$.get("/select/" + encodeURIComponent(query), function(data){
+			console.log(data)
+		});
 
-  })
+	})
     //query = '4#1449360000000|1449361000000|10|"Hillary Clinton;"'
-	$('#show_visualization').click(function(){
-		initializeTraces();
+    $('#show_visualization').click(function(){
+    	initializeTraces();
 
-		query = '4#1448081559999|1448082159999|Hillary Clinton;';
-		$.get('/select/' + encodeURIComponent(query), function(data){
-			console.log(data);
-			// timestamp = 120;
-			// value = data["content"]["data"];
-		 //    // old data
-		 //    data = [{x: 1,y: 5},{x: 20,y: 20}, {x: 40,y: 10}, {x: 60,y: 40}, {x: 80,y: 100}, {x: 100,y: 60}]
-		 //    // add new data point to end
-		 //    data.push({x: timestamp, y: value})
-		 //    makeGraph(data);
-		  })
-	// for(var i = 0; i < candidateList.length; i++){
-	// 	var candidate = candidateList[i];
+		// query = '4#1448081559999|1448082159999|Hillary Clinton;';
+		// $.get('/select/' + encodeURIComponent(query), function(data){
+		// 	console.log(data);
+		// 	var tupleList = deserialize(data["content"]["data"]);
+		// 	for(var i = 0; i < tupleList.length; i++){
+		// 		console.log(detuple(tupleList[i]));
+		// 	}
+		// 	// timestamp = 120;
+		// 	// value = data["content"]["data"];
+		//  //    // old data
+		//  //    data = [{x: 1,y: 5},{x: 20,y: 20}, {x: 40,y: 10}, {x: 60,y: 40}, {x: 80,y: 100}, {x: 100,y: 60}]
+		//  //    // add new data point to end
+		//  //    data.push({x: timestamp, y: value})
+		//  //    makeGraph(data);
+		//   })
+
+		    for(var i = 0; i < candidateList.length; i++){
+		    	var candidate = candidateList[i];
 
 
-	// 				// var trace = { "x" : [], "y" : [], "type" : "scatter", "line" : { color: 'rgb(55, 128, 191)',}};
+					// var trace = { "x" : [], "y" : [], "type" : "scatter", "line" : { color: 'rgb(55, 128, 191)',}};
 
-	// 				for(var j = 0; j < timerange.length; j++){
+					// for(var j = 0; j < timerange.length; j++){
 
-	// 					(function(UNIX_timestamp_ms, candidate, callback){
-	// 						query = generateSelectQuery(UNIX_timestamp_ms, candidate);
+					// 	(function(UNIX_timestamp_ms, candidate, callback){
+					// 		query = generateSelectQuery(UNIX_timestamp_ms, candidate);
 
-	// 						$.get("/select/" + encodeURIComponent(query),
-	// 							function(data){
-	// 								var trace = {};
-	// 								var result = data["content"]["data"];
-	// 								trace["candidate"]  = candidate.toString();
-	// 								trace["unix_time"] = UNIX_timestamp_ms;
-	// 								trace["count"]= result;
+							// $.get("/select/" + encodeURIComponent(query),
+							// 	function(data){
+							// 		var trace = {};
+							// 		var result = data["content"]["data"];
+							// 		trace["candidate"]  = candidate.toString();
+							// 		trace["unix_time"] = UNIX_timestamp_ms;
+							// 		trace["count"]= result;
 
-	// 								callback(trace);
-	// 							});
-	// 					})(timerange[j], candidate, addToTraces);
+							// 		callback(trace);
+							// 	});
+					// 	})(timerange[j], candidate, addToTraces);
 
-	// 				}
+					// }
+					(function(startUNIX, endUNIX, candidate, callback){
 
-	// 			}
-	// 			console.log("OUT");
+						query = serialize("4", [startUNIX.toString(), endUNIX.toString(), candidate]);
+						$.get("/select/" + encodeURIComponent(query),
+							function(data){
+								// var result = data["content"]["data"];
+								var tupleList = deserialize(data["content"]["data"]);
+								var traceList = [];
+								for(var j = 0; j < tupleList.length; j++){
+									var trace = {};
+									var tuple = detuple(tupleList[j]);
+									trace["candidate"]  = candidate.toString();
+									trace["unix_time"] = tuple[0];
+									trace["count"]= tuple[1];
+									traceList.push(trace);
+								}
+
+								callback(traceList);
+						});
+					})(startUNIX, endUNIX, candidate, addToTraces);
+
+				}
+				console.log("OUT");
 
 			})
 
-function generateSelectQuery(UNIX_timestamp_ms, candidate){
-			query = "3"; //to Select single datapoint
-			query += "#";
-			query += UNIX_timestamp_ms.toString();
-			query += "|";
-			query += candidate;
-			query += ";"
+function serialize(QueryType_value, data){
+			query = QueryType_value; //to Select single datapoint
+			query += QTYPE_SEPARATOR;
+			query += data.join(DATA_SEPARATOR);
+			query += QUERY_SEPARATOR;
+			console.log(query);
 			return query;
 		}
 
@@ -175,7 +217,7 @@ function generateSelectQuery(UNIX_timestamp_ms, candidate){
 			MARGINS = {
 				top: 0,
 				right: 50,
-				bottom: 80,
+				bottom: 50,
 				left: 100
 
 			},

@@ -67,7 +67,9 @@ def clientthread(conn):
             reply = "updating"
             #reply = db.update(params[1:])
         elif param_type == QueryType.SELECTRANGE:
-            reply = db.selectRangeForDisplay(msToSec(params[1]), msToSec(params[2]), params[3])
+            dbResponse = list(db.selectRangeForDisplay(msToSec(params[1]), msToSec(params[2]), params[3]))
+            dbResponse.insert(0, QueryType.SERVER_REPLY)
+            reply = qe.serialize(dbResponse)
         else:
             # throw exception
             reply = "Invalid arguments, should be start with SELECT, INSERT, or UPDATE"
