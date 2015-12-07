@@ -14,7 +14,6 @@ class Database:
         with open(str(filename)+'.txt', 'a') as outfile:
             json.loads(data)
 
-    
     def accumulateFile(self, fileName):
         #Load the file we want to accumulate values for
         with open(fileName,'r') as current_file:
@@ -130,7 +129,10 @@ class Database:
         for fileNumber in range(startFileNumber, endFileNumber+1):
             if fileNumber == startFileNumber:
                 startB = startBucket
-                endB = 287 #hardcoding right now, but can call windowsize if we want this to work for different time ranges
+                if startFileNumber==endFileNumber:
+                    endB = endBucket
+                else:
+                    endB = 287 #hardcoding right now, but can call windowsize if we want this to work for different time ranges
             elif fileNumber == endFileNumber:
                 startB = 0
                 endB = endBucket
@@ -152,6 +154,8 @@ class Database:
         #windowSize can be 
     def selectRangeForDisplay(self, startTimestamp, endTimestamp, keyword):
         #sample timestamp is 1449186990 (assuming was divided by 1000 already)
+        if (endTimestamp < startTimestamp):
+            return []
         tick = 5 * 60 #seconds to add - assuming window size is 5 here!
         bucketMod = self.setWindow(5)
         [startFileNumber, startBucket] = self.getNames(startTimestamp) #convert bucket to string
@@ -167,7 +171,7 @@ class Database:
                     endB = endBucket
                 else:
                     endB = bucketMod-1 
-            elif fileNumber == endFileNumber+1:
+            elif fileNumber == endFileNumber:
                 startB = 0
                 endB = endBucket
             else:
