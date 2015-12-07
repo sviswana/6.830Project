@@ -26,41 +26,6 @@ class Database:
         with open(str(filename)+'.txt', 'a') as outfile:
             json.loads(data)
 
-    def accumulateFile(self, fileName):
-        #Load the file we want to accumulate values for
-        with open(fileName,'r') as current_file:
-            dataMap = json.load(current_file)
-
-        startTimestamp = int(fileName[:-4]) * 86400
-
-        #load the accumulated counts file
-        with open('accumulatedCounts.txt','r') as currentCounts_file:
-            try:
-                currentMap = json.load(currentCounts_file)
-            except:
-                currentMap = {}
-                currentMap["firstTime"] = startTimestamp
-            #go through each bucket
-            for bucket in range(0,288):
-                currentMap[startTimestamp] = {}
-                for candidate in self.candidateList:
-                    if candidate in dataMap[str(bucket)]:
-                        if not (startTimestamp-300) in currentMap:
-                            currentMap[startTimestamp][candidate] = dataMap[str(bucket)][candidate]
-                        else:
-                            currentMap[startTimestamp][candidate] = currentMap[startTimestamp - 300][candidate] + dataMap[str(bucket)][candidate]
-                    else:
-                        if not (startTimestamp-300) in currentMap:
-                            currentMap[startTimestamp][candidate] = 0
-                        else:
-                            currentMap[startTimestamp][candidate] = currentMap[startTimestamp - 300][candidate]                 
-                startTimestamp += 300
-            currentMap["lastTime"] = startTimestamp
-        with open('accumulatedCounts.txt','w') as updated_file:
-            json.dump(currentMap, updated_file)
-
-
-
     def insert(self,timestamp, keyword, count):
         ##assume values is coming in the python form:
         ##[('clinton', 1),('sanders',1)]
@@ -181,18 +146,6 @@ class Database:
         startCounts = self.incrementalCount[startTimestamp/300 - 1][str(keyword)]
         return str(endCounts - startCounts)
 
-    def selectFastRange(self,startTimestamp, endTimestamp, keyword):
-        with open('accumulatedCounts.txt','r') as cumul_file:
-            cumulMap = json.load(cumul_file)
-            startTimestamp = (startTimestamp / 300) * 300
-            endTimestamp = (endTimestamp / 300) * 300
-            if endTimestamp > cumulMap["lastTime"]:
-                endTimestamp = cumulMap["lastTime"]
-            if startTimestamp < cumulMap["firstTime"]:
-                startTimestamp = cumulMap["firstTime"]
-            last = cumulMap[str(endTimestamp)][str(keyword)]
-            start = cumulMap[str(startTimestamp - 300)][str(keyword)]
-            return last - start
 
     def getAverage(self, startTimestamp, endTimestamp, keyword):
         totalCounts = selectFastRange(startTimestamp, endTimestamp, keyword)
@@ -200,6 +153,9 @@ class Database:
         return str(float(totalCounts) / buckets)
 
     def getRunningAverage(self, candidate):
+        return str(self.runningMean[candidate])
+
+    def getRunningVariance(self, candidate):
         return str(self.runningMean[candidate])
 
     #for right now, support start and end timestamp, and one keyword
