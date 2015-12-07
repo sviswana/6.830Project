@@ -77,6 +77,9 @@ $(document).ready(function(){
 		});
 
 
+ $('#get_inc_avg').click(function(){
+    
+ })
 	$('#submit_query').click(function(){
 		startTime = $("#start").val();
 		endTime = $("#end").val();
@@ -217,7 +220,7 @@ function serialize(QueryType_value, data){
 			console.log(dataGroup);
 
 			var vis = d3.select('#visualisation'),
-			WIDTH = 2000,
+			WIDTH = 1000,
 			HEIGHT = 500,
 			MARGINS = {
 				top: 0,

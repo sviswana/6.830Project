@@ -21,8 +21,17 @@
   <option value=20>20</option>
 </select>
   <button id="submit_query">Submit Query</button>
-
   <button id="show_visualization">Show Graph</button>
+
+        <% for(var i=0; i<candidates.length; i++) { %>
+
+      <div class="radio">
+        <label class="btn btn-default">
+          <input type="radio" id='<%= candidates[i] %>' value="<%= i %> " name="candidateButton"><%= candidates[i] %> 
+        </label>
+      </div>
+      <% } %>
+  <button id="get_inc_avg">Get Incremental Average</button>
   <svg id="visualisation" width="1000" height="500"></svg>
 
   <ul>
