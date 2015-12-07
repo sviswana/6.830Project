@@ -143,9 +143,10 @@ $(document).ready(function(){
 								for(var j = 0; j < tupleList.length; j++){
 									var trace = {};
 									var tuple = detuple(tupleList[j]);
+                  console.log(tuple[0], convertToInt(tuple[0]))
 									trace["candidate"]  = candidate.toString();
-									trace["unix_time"] = tuple[0];
-									trace["count"]= tuple[1];
+									trace["unix_time"] = convertToInt(tuple[0]);
+									trace["count"]= convertToInt(tuple[1]);
 									traceList.push(trace);
 								}
 
@@ -157,6 +158,10 @@ $(document).ready(function(){
 				console.log("OUT");
 
 			})
+
+function convertToInt(timeString){
+  return timeString.substring(1, timeString.length-1) * 1;
+}
 
 function serialize(QueryType_value, data){
 			query = QueryType_value; //to Select single datapoint
