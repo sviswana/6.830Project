@@ -88,6 +88,21 @@ $(document).ready(function(){
     });
     
  })
+
+  $('#get_inc_count').click(function(){
+    candidate = $('input[type=radio]:checked').attr('id');
+    startTime = $("#start").val();
+    endTime = $("#end").val();
+
+    query = '7#' + startTime + '|' + endTime + '|' + candidate + ";";
+
+
+    $.get("/select/" + encodeURIComponent(query), function(data){
+      $("#inc_count").text(data["content"]["data"]);
+      console.log(data["content"]["data"])
+    });
+    
+ })
 	$('#submit_query').click(function(){
 		startTime = $("#start").val();
 		endTime = $("#end").val();

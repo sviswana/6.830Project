@@ -72,6 +72,8 @@ def clientthread(conn):
             reply = qe.serialize(dbResponse)
         elif param_type == QueryType.INC_AVG:
             reply = db.getRunningAverage(params[1]);
+        elif param_type == QueryType.INC_COUNT:
+            reply = db.getAggregateCountInRange(msToSec(params[1]), msToSec(params[2]), params[3])
         else:
             # throw exception
             reply = "Invalid arguments, should be start with SELECT, INSERT, or UPDATE"
