@@ -13,7 +13,7 @@ class QueryEngine:
     def serialize(self, query):
         if not query:
             raise QueryError("No data provided for query");
-        qType, dateTime, keyword = query[0], query[1], query[2]
+        qType = query[0]
 
         serString = self.DATA_SEPARATOR.join(str(val) for val in query[1:]);
 
@@ -64,6 +64,7 @@ class QueryType(Enum):
     INSERT = 2
     SELECT = 3
     SELECTRANGE = 4
+    SERVER_REPLY = 5
 
 
 class QueryError(Exception):
