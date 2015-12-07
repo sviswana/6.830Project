@@ -46,7 +46,7 @@ def clientthread(conn):
         #Receiving from client
         reply = ''
         data = conn.recv(1024)
-        print data
+        #print data
         
         params = qe.deserialize(data)
         param_type = params[0]
