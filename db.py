@@ -68,14 +68,14 @@ class Database:
                 self.runningMean[str(candidate)] = newMean
                 self.counts[str(candidate)]+=1
                 if (timestamp/300 -1) not in self.incrementalCount:
-                    self.incrementalCount[timestamp/300] = 0
+                    self.incrementalCount[timestamp/300][candidate] = 0
                 else:
                     self.incrementalCount[timestamp/300][candidate] = self.incrementalCount[timestamp/300 - 1][candidate] +count
                 self.incrementalCount["lastTime"] = timestamp/300
             print("COUNTS: ", self.counts)
             print("RUNNING AVERAGE:", self.runningMean)
             print("RUNNING VAR:", self.runningVar)
-            print("INCREMEANL COUNT", self.incrementalCount)
+            print("INCREMENTAL COUNT", self.incrementalCount)
             self.previousBucket = bucket
         #print 'dataMap', dataMap#str(dataMap).replace("u\'","\'")
         print "bucket", bucket
@@ -197,6 +197,7 @@ class Database:
             return []
         tick = 5 * 60 #seconds to add - assuming window size is 5 here!
         bucketMod = self.setWindow(5)
+        print "bucketMod", bucketMod
         [startFileNumber, startBucket] = self.getNames(startTimestamp) #convert bucket to string
         [endFileNumber, endBucket] = self.getNames(endTimestamp)
 
@@ -246,7 +247,7 @@ class Database:
     def selectRangeAndInterval(self, startTime, endTime, interval, keyword):
         tick = interval * 60
         numBuckets = interval / 5
-
+        bucketMod = self.setWindow(interval)
         [startFileNumber, startBucket] = self.getNames(startTime) #convert bucket to string
         [endFileNumber, endBucket] = self.getNames(endTime)
         print startFileNumber, endFileNumber
@@ -271,9 +272,16 @@ class Database:
 
                 bucketNumber = str(bucketNumber)
                 if LRU.get(str(fileNumber)) == -1:
+
                     with open(str(fileNumber)+'.txt') as data_file:
-                        dataMap = json.load(data_file)
-                        LRU.set(str(fileNumber), dataMap)
+                        try:
+                            dataMap = json.load(data_file)
+                        except:
+                            for i in range(t, endTimestamp+tick, tick):
+                                finalList.append((str(i), str(0)))
+                            return finalList
+                        LRU.set(str(fileNumber), dataMap)                        
+                        
                 else:
                     dataMap = LRU.get(str(fileNumber))
                 total_count = 0
@@ -281,9 +289,12 @@ class Database:
                     if str(bucket) in dataMap and str(keyword) in dataMap[str(bucket)]:
                         count=dataMap[str(bucket)][str(keyword)]
                         total_count += count
-                finalList.append((t, total_count))
+                finalList.append((str(t), str(total_count)))
                 t = t+ tick
-                    
+            if finalList == []:
+                for i in range(t, endTimestamp+tick, tick):
+                    finalList.append((str(i), str(0)))
+                return finalList        
         return finalList
     
     #helper function if we want to change window size for inserting in future
@@ -291,8 +302,8 @@ class Database:
         return 24*60 / windowSize
 db = Database()
 
-print db.selectFastRange(1448081400, 1448083000, 'Carly Fiorina')
-print db.selectRange( 1448081559999/1000, 1448082159999/1000,'Carly Fiorina')
+#print db.selectFastRange(1448081400, 1448083000, 'Carly Fiorina')
+#print db.selectRange( 1448081559999/1000, 1448082159999/1000,'Carly Fiorina')
 names = ['Hillary Clinton','Carly Fiorina','Bernie Sanders','BernieSanders','Marco Rubio','Donald Trump','Ted Cruz','Ben Carson','Rand Paul']
 '''
 count = 2500
