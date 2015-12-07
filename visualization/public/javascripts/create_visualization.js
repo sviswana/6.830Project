@@ -11,6 +11,7 @@ $(document).ready(function(){
 
 
 	timerange = [];
+	five_minutes_in_ms = 300000;
 	interval = 300000;
 	currentTime = 1448082159999; //TODO (change this) : new Date();
 	DATA_SEPARATOR = "|";
@@ -103,23 +104,11 @@ $(document).ready(function(){
     });
     
  })
-	$('#submit_query').click(function(){
-		startTime = $("#start").val();
-		endTime = $("#end").val();
-		interval = $("#interval").val();
-		candidate = "Hillary Clinton"
 
-		query = '4#' + startTime + '|' + endTime + '|' + interval + '|' + candidate;
-
-		$.get("/select/" + encodeURIComponent(query), function(data){
-			console.log(data["content"]["data"]);
-		});
-
-	})
     //query = '4#1449360000000|1449361000000|10|"Hillary Clinton;"'
     $('#show_visualization').click(function(){
     	initializeTraces();
-    	interval = parseInt($('#interval').val());
+    	interval = parseInt($('#interval').val()) * five_minutes_in_ms;
     	startUNIX = parseInt($('#start').val());
 
     	endUNIX = parseInt($('#end').val());
@@ -176,10 +165,12 @@ $(document).ready(function(){
 								for(var j = 0; j < tupleList.length; j++){
 									var trace = {};
 									var tuple = detuple(tupleList[j]);
-                  console.log(tuple[0], convertToInt(tuple[0]))
+                  					console.log(tuple[0], convertToInt(tuple[0]))
 									trace["candidate"]  = candidate.toString();
 									trace["unix_time"] = convertToInt(tuple[0]);
 									trace["count"]= convertToInt(tuple[1]);
+									console.log(trace["count"]);
+
 									traceList.push(trace);
 								}
 

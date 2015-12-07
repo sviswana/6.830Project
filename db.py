@@ -224,12 +224,15 @@ class Database:
         #windowSize can be 
     def selectRangeForDisplay(self, startTimestamp, endTimestamp, keyword):
         #sample timestamp is 1449186990 (assuming was divided by 1000 already)
+        print "start Time: ", startTimestamp
         if (endTimestamp < startTimestamp):
             return []
         tick = 5 * 60 #seconds to add - assuming window size is 5 here!
         bucketMod = self.setWindow(5)
         [startFileNumber, startBucket] = self.getNames(startTimestamp) #convert bucket to string
         [endFileNumber, endBucket] = self.getNames(endTimestamp)
+
+        print "fileNum", startFileNumber, endFileNumber
         #If timestamps span more than a day, we need to ensure that we get all the buckets in the range
         t = startTimestamp
         finalList = []
@@ -251,15 +254,25 @@ class Database:
                 bucketNumber = str(bucketNumber)
                 if LRU.get(str(fileNumber)) == -1:
                     with open(str(fileNumber)+'.txt') as data_file:
-                        dataMap = json.load(data_file)
+                        try:
+                            dataMap = json.load(data_file)
+                        except:
+                            for i in range(t, endTimestamp+300, 300):
+                                finalList.append((str(i), str(0)))
+                            return finalList
                         LRU.set(str(fileNumber), dataMap)
                 else:
                     dataMap = LRU.get(str(fileNumber))
                 if bucketNumber in dataMap and str(keyword) in dataMap[bucketNumber]:
                     count=dataMap[bucketNumber][str(keyword)]
                     finalList.append((str(t), str(count)))
+                else:
+                    finalList.append((str(t),str(0)))
                 t = t+ tick
-                    
+        if finalList == []:
+            for i in range(t, endTimestamp+300, 300):
+                finalList.append(str(i), str(0))
+            return finalList
         return finalList
 
     def selectRangeAndInterval(self, startTime, endTime, interval, keyword):
