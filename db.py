@@ -1,8 +1,9 @@
 import json
 import os
 import ast
+import random
 #[update <timestamp> Hillary 5]
-
+from LRU import LRU
 class Database:
         
     def get_data(self,timestamp,data):
@@ -29,9 +30,13 @@ class Database:
             with open(str(filename)+'.txt','w') as data_file:
                 #json.dump(ast.literal_eval(str(dataMap)), data_file)
                 json.dump(dataMap, data_file)
-                
-        with open(str(filename)+'.txt') as data_file:
-            dataMap = json.load(data_file)
+        
+        if LRU.get(str(filename)) == -1:
+            with open(str(filename)+'.txt') as data_file:
+                dataMap = json.load(data_file)
+                LRU.set(str(filename), dataMap)
+        else:
+            dataMap = LRU.get(str(filename))       
         #print 'dataMap', dataMap#str(dataMap).replace("u\'","\'")
         print "bucket", bucket
         keywords = dataMap[str(bucket)]
@@ -39,11 +44,16 @@ class Database:
         print 'keywords', keywords
         if not keyword in keywords:
             print 'not in keyword so adding'
-            dataMap[bucket][keyword] = count
+            dataMap[bucket][keyword] = count 
             #print 'dataMap', dataMap
         else:
+            #counts per bucket
             dataMap[bucket][keyword]+=count
-            
+        #to get the aggregate counts for each keyword for a day
+        if not keyword in dataMap:
+            dataMap[keyword] = count
+        else:
+            dataMap[keyword]+=count
         with open(str(filename)+'.txt', 'w') as outfile:
             print 'writing to json output'
             #print dataMap
@@ -64,8 +74,12 @@ class Database:
         bucket = str(bucket)
         keyword = str(keyword)
         #first get the associated page with this data & timestamp
-        with open(str(filename)+'.txt') as data_file:
-            dataMap = json.load(data_file)
+        if LRU.get(str(filename)) == -1:
+            with open(str(filename)+'.txt') as data_file:
+                dataMap = json.load(data_file)
+                LRU.set(str(filename), dataMap)
+        else:
+            dataMap = LRU.get(str(filename))
         if bucket in dataMap and keyword in dataMap[bucket]:
             return str(dataMap[bucket][keyword])
         else:
@@ -89,8 +103,12 @@ class Database:
                 endB = 287
             for bucketNumber in range(startB, endB+1):
                 bucketNumber = str(bucketNumber)
-                with open(str(fileNumber)+'.txt') as data_file:
-                    dataMap = json.load(data_file)
+                if LRU.get(str(fileNumber)) == -1:
+                    with open(str(fileNumber)+'.txt') as data_file:
+                        dataMap = json.load(data_file)
+                        LRU.set(str(fileNumber), dataMap)
+                else:
+                    dataMap = LRU.get(str(fileNumber))
                 if bucketNumber in dataMap and str(keyword) in dataMap[bucketNumber]:
                     aggregateCount+=dataMap[bucketNumber][str(keyword)]
         return str(aggregateCount)
@@ -122,8 +140,12 @@ class Database:
             for bucketNumber in range(startB, endB+1):
 
                 bucketNumber = str(bucketNumber)
-                with open(str(fileNumber)+'.txt') as data_file:
-                    dataMap = json.load(data_file)
+                if LRU.get(str(fileNumber)) == -1:
+                    with open(str(fileNumber)+'.txt') as data_file:
+                        dataMap = json.load(data_file)
+                        LRU.set(str(fileNumber), dataMap)
+                else:
+                    dataMap = LRU.get(str(fileNumber))
                 if bucketNumber in dataMap and str(keyword) in dataMap[bucketNumber]:
                     count=dataMap[bucketNumber][str(keyword)]
                     finalList.append((t, count))
@@ -136,3 +158,22 @@ class Database:
     def setWindow(self, windowSize):
         return 24*60 / windowSize
 db = Database()
+
+names = ['Hillary Clinton','Carly Fiorina','Bernie Sanders','BernieSanders','Marco Rubio','Donald Trump','Ted Cruz','Ben Carson','Rand Paul']
+
+
+count = 2500
+for name in names:   
+    db.insert(1448082159999/1000, name, count)
+    count +=random.randint(1000,5000)
+    db.insert(1448081559999/1000, name, count)
+    count+=random.randint(1000,5000)
+    db.insert(1448080959999/1000, name,count)
+    count+=random.randint(1000,5000)
+    db.insert(1448081859999/1000, name, count)
+    count+=random.randint(1000,5000)
+    db.insert(1448081259999/1000, name, count)
+    count+=random.randint(1000,5000)
+
+
+
