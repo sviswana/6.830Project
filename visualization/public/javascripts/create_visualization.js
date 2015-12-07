@@ -1,12 +1,14 @@
 $(document).ready(function(){
-	candidateList = ["Hillary Clinton",
-	"Carly Fiorina",
-	"Bernie Sanders",
-	"Marco Rubio", 
-	"Donald Trump", 
-	"Ted Cruz", 
-	"Ben Carson", 
-	"Rand Paul"];
+	// candidateList = ["Hillary Clinton",
+	// "Carly Fiorina",
+	// "Bernie Sanders",
+	// "Marco Rubio", 
+	// "Donald Trump", 
+	// "Ted Cruz", 
+	// "Ben Carson", 
+	// "Rand Paul"];
+	candidateList = [];
+
 
 	timerange = [];
 	interval = 300000;
@@ -25,10 +27,12 @@ $(document).ready(function(){
 		traces = [];
 	}
 
+	function clearCandidates(){
+		candidateList = [];
+	}
 	function addToTraces(traceList){
 		// console.log(candidateList.length * ((endUNIX - startUNIX)/interval) + 1);
 		traces = traces.concat(traceList);
-		// console.log(traces.length);
 		if(traces.length >= (candidateList.length * (((endUNIX - startUNIX)/interval) + 1 ) )){
 			makeGraph(traces);
 		}
@@ -39,7 +43,6 @@ $(document).ready(function(){
 		var query = fullquery.split(QUERY_SEPARATOR.toString())[0];
 		var data = query.split(self.QTYPE_SEPARATOR)[1];
 		var tupleList =  data.split(self.DATA_SEPARATOR);
-		//console.log(tupleList);
 		return tupleList
 	}
 
@@ -47,13 +50,12 @@ $(document).ready(function(){
 		return tuple.split(")")[0].split("(")[1].split(", ");
 	}
 
-	$('input[type=checkbox]').change(
+	$('input[type=radio]').change(
 		function(){
-			console.log("checkbox")
+			clearCandidates();
 			var id = $(this).attr('id');
 			var index = candidateList.indexOf(id);
 			var changed = false;
-
 			if (this.checked) {
 				if(index <= -1){
 					candidateList.push(id);
@@ -220,7 +222,7 @@ function serialize(QueryType_value, data){
 			MARGINS = {
 				top: 0,
 				right: 50,
-				bottom: 80,
+				bottom: 50,
 				left: 100
 
 			},
