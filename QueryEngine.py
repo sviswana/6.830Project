@@ -30,6 +30,7 @@ class QueryEngine:
 
 
         extractedQuery = data.split(self.DATA_SEPARATOR)
+
         for index in xrange(0, len(list(extractedQuery))):
             try:
                 int_val = int(extractedQuery[index])
@@ -43,6 +44,7 @@ class QueryType(Enum):
     UPDATE = 1
     INSERT = 2
     SELECT = 3
+    SELECT_RANGE_INTERVAL = 4
 
 class QueryError(Exception):
      def __init__(self, value):

@@ -50,6 +50,8 @@ def clientthread(conn):
         
         params = qe.deserialize(data)
         param_type = params[0]
+        print param_type
+        print param_type == QueryType.SELECT_RANGE_INTERVAL
         print 'PARAMS', params
         if param_type == QueryType.SELECT:
             reply = db.select(params[1]/1000, params[2])
@@ -65,6 +67,8 @@ def clientthread(conn):
         elif param_type == QueryType.UPDATE:
             reply = "updating"
             #reply = db.update(params[1:])
+        elif param_type == QueryType.SELECT_RANGE_INTERVAL:
+            reply = db.selectRangeAndInterval(params[1]/1000, params[2]/1000, params[3], params[4])
         else:
             # throw exception
             reply = "Invalid arguments, should be start with SELECT, INSERT, or UPDATE"
