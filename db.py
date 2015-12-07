@@ -13,7 +13,8 @@ class Database:
         self.runningMean = {"Hillary Clinton":0,"Carly Fiorina":0,"Bernie Sanders":0,"Marco Rubio":0, "Donald Trump":0, "Ted Cruz":0, "Ben Carson":0, "Rand Paul":0}
         self.previousBucket = (int(time.time()) / 300) % 288
         self.candidateList = ["Hillary Clinton","Carly Fiorina","Bernie Sanders","Marco Rubio", "Donald Trump", "Ted Cruz", "Ben Carson", "Rand Paul"]
-        self.incrementalCount = {}       
+        self.incrementalCount = {}  
+        self.incrementalCount["startTime"] =  int(time.time()) / 300    
 
     def get_data(self,timestamp,data):
         ##assumes timestamp is passed in seconds
@@ -99,7 +100,7 @@ class Database:
                     self.incrementalCount[timestamp/300] = 0
                 else:
                     self.incrementalCount[timestamp/300][candidate] = self.incrementalCount[timestamp/300 - 1][candidate] +count
-
+                self.incrementalCount["lastTime"] = timestamp/300
             print("COUNTS: ", self.counts)
             print("RUNNING AVERAGE:", self.runningMean)
             print("INCREMEANL COUNT", self.incrementalCount)
@@ -155,6 +156,10 @@ class Database:
             return [timestamp, 0]
     
     def getAggregateCountInRange(self, startTimestamp, endTimestamp, keyword):
+        if endTimestamp > self.incrementalCount["lastTime"]:
+            endTimestamp = self.incrementalCount["lastTime"]
+        if startTimestamp < self.incrementalCount["startTime"]:
+            startTimestamp = self.incrementalCount["startTime"]
         endCounts = self.incrementalCount[endTimestamp/300][str(keyword)]
         startCounts = self.incrementalCount[startTimestamp/300 - 1][str(keyword)]
         return endCounts - startCounts
