@@ -10,6 +10,7 @@ $(document).ready(function(){
 
 
 
+
 	candidateList = [];
 
 // initialize axes for graph
@@ -142,14 +143,15 @@ function displayChart(data){
        candidates = ["Hillary Clinton","Carly Fiorina","Bernie Sanders","Marco Rubio", "Donald Trump", "Ted Cruz", "Ben Carson", "Rand Paul"];
     startTime = $("#start").val();
     endTime = $("#end").val();
+    interval = parseInt($('#interval').val()) * five_minutes_in_ms;
 
-    (function(candidates, startTime, endTime, callback){
+    (function(candidates, startTime, endTime, interval,callback){
 
     for(var i = 0; i < candidates.length; i++){
       var candidate = candidates[i];
 
       // modify query to do incremental counts later
-      query = serialize("4", [startTime, endTime, candidate]);
+      query = serialize("4", [startTime, endTime, interval, candidate]);
     $.get("/select/" + encodeURIComponent(query), function(d){
         response = deserialize(d["content"]["data"]);
 
@@ -162,7 +164,7 @@ function displayChart(data){
     });
 
     }
-    })(candidates, startTime, endTime, addCounts);
+    })(candidates, startTime, endTime, interval, addCounts);
  })
 
   function addCounts(count){
@@ -200,7 +202,7 @@ function displayChart(data){
 
 					(function(startUNIX, endUNIX, candidate, callback){
 
-						query = serialize("4", [startUNIX.toString(), endUNIX.toString(), candidate]);
+						query = serialize("4", [startUNIX.toString(), endUNIX.toString(), interval.toString(), candidate]);
 						$.get("/select/" + encodeURIComponent(query),
 							function(data){
 								// var result = data["content"]["data"];

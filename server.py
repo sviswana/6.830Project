@@ -67,7 +67,8 @@ def clientthread(conn):
             reply = "updating"
             #reply = db.update(params[1:])
         elif param_type == QueryType.SELECTRANGE:
-            dbResponse = list(db.selectRangeForDisplay(msToSec(params[1]), msToSec(params[2]), params[3]))
+            #dbResponse = list(db.selectRangeForDisplay(msToSec(params[1]), msToSec(params[2]), params[3]))
+            dbResponse = list(db.selectRangeAndInterval(msToSec(params[1]), msToSec(params[2]), params[3],params[4]))
             dbResponse.insert(0, QueryType.SERVER_REPLY)
             reply = qe.serialize(dbResponse)
         elif param_type == QueryType.INC_AVG:
