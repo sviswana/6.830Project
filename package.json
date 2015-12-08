@@ -1,0 +1,25 @@
+{
+  "name": "6.830project",
+  "version": "1.0.0",
+  "description": "twitter streaming project",
+  "main": "index.js",
+  "dependencies": {
+    "plotly": "^1.0.5",
+    "express": "^4.13.3",
+    "vis": "^4.10.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "npm start"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sviswana/6.830Project.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/sviswana/6.830Project/issues"
+  },
+  "homepage": "https://github.com/sviswana/6.830Project#readme"
+}
