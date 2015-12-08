@@ -8,8 +8,12 @@ $(document).ready(function(){
 	// "Ben Carson", 
 	// "Rand Paul"];
 
+
+
 	candidateList = [];
 
+// initialize axes for graph
+makeGraph([])
 
 	timerange = [];
 	five_minutes_in_ms = 300000;
@@ -68,19 +72,27 @@ function displayChart(data){
       .attr("fill", function(d, i){
           return color(i);
       })
+      .attr("data-legend",function(d,i) { return data[i].label; })
       .attr("d", function (d) {
           // log the result of the arc generator to show how cool it is :)
           console.log(arc(d));
           return arc(d);
       });
 
-  // add the text
-  arcs.append("svg:text").attr("transform", function(d){
+      // add the text
+      arcs.append("svg:text").attr("transform", function(d){
         d.innerRadius = 0;
         d.outerRadius = r;
       return "translate(" + arc.centroid(d) + ")";}).attr("text-anchor", "middle").text( function(d, i) {
-      return data[i].label;}
+      return data[i].value;}
+      //return data[i].label;}
       );
+
+        legend = vis.append("g")
+    .attr("class","legend")
+    .attr("transform","translate(50,30)")
+    .style("font-size","12px")
+    .call(d3.legend)
 
   }
 	function detuple(tuple){
@@ -271,8 +283,8 @@ function serialize(QueryType_value, data){
 			console.log(dataGroup);
 
 			var vis = d3.select('#visualisation'),
-			WIDTH = 1500,
-			HEIGHT = 800,
+			WIDTH = 1000,
+			HEIGHT = 600,
 			MARGINS = {
 				top: 50,
 				right: 50,

@@ -6,12 +6,21 @@
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
   <script src="http://d3js.org/d3.v3.min.js" charset="utf-8"></script>
   <script type="text/javascript" src="/javascripts/create_visualization.js"></script>
+  <script type="text/javascript" src="/javascripts/d3legend.js"></script>
   <script type="text/javscript" src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
 
+<style>
+
+.legend rect {
+  fill:white;
+  stroke:black;
+  opacity:0.8;}
+
+</style>
 </head>
 <body>
-  <h1><%= title %></h1>
-  <p>Welcome to <%= title %></p>
+  <h1>Twitter Mentions for 2016 Presidential Candidates</h1>
+  <p>This is a visualization showing the number of times each major 2016 presidential candidate is mentioned on Twitter within 5-minute periods throughout the day. Select a candidate to begin.</p>
     Start time: <input type="text" id="start" value = '1449331500000'>
     End time: <input type="text" id="end" value = '1449331800000'>
     Interval: <select id = "interval"> min
@@ -22,9 +31,14 @@
 </select>
   <!-- <button id="submit_query">Submit Query</button> -->
   <button id="show_visualization">Show Graph</button>
-  <svg id="visualisation" width="1500" height="800"></svg>
 
+<div id = "wrapper">
+  <div id = "line_chart">
+    <svg id="visualisation" width="1000" height="600"></svg>
+  </div>
 
+<div id = "buttons">
+  <h2>Candidates</h2>
   <ul>
     <div class="btn-group" data-toggle="buttons">
       <% for(var i=0; i<candidates.length; i++) { %>
@@ -35,14 +49,20 @@
         </label>
       </div>
       <% } %>
-        <button id="get_inc_avg">Get Incremental Average</button><span id="inc_avg"></span>
-        <button id="get_inc_count">Get Incremental Count</button><span id="inc_count"></span>
+        <button id="get_inc_avg">Update Average</button>
+        <button id="get_inc_count">Update Count</button>
+
+        Average: <span id="inc_avg"></span><br>
+        Count: <span id="inc_count"></span>
+          <div id="chart"></div>
     </div>
 
 
   </ul>
+</div>
+</div>
 
   <button id="show_chart">Show Pie Chart</button>
-  <div id="chart"></div>
+
 </body>
 </html>

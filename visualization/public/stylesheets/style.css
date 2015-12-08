@@ -6,3 +6,21 @@ body {
 a {
   color: #00B7FF;
 }
+
+#wrapper {
+	width: 1300px;
+	height:800px;
+	position: absolute;
+}
+
+#line_chart {
+	float:left;
+	width: 1000px;
+	height:800px;
+}
+
+#buttons {
+	float:right;
+	width: 300px;
+	height: 800px;
+}
