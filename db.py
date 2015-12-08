@@ -234,13 +234,13 @@ class Database:
                     dataMap = LRU.get(str(fileNumber))
                 if bucketNumber in dataMap and str(keyword) in dataMap[bucketNumber]:
                     count=dataMap[bucketNumber][str(keyword)]
-                    finalList.append((str(t), str(count)))
+                    finalList.append((str(t), str(count), keyword))
                 else:
-                    finalList.append((str(t),str(0)))
+                    finalList.append((str(t),str(0), keyword))
                 t = t+ tick
         if finalList == []:
             for i in range(t, endTimestamp+300, 300):
-                finalList.append((str(i), str(0)))
+                finalList.append((str(i), str(0), keyword))
             return finalList
         return finalList
 
@@ -305,7 +305,8 @@ db = Database()
 
 #print db.selectFastRange(1448081400, 1448083000, 'Carly Fiorina')
 #print db.selectRange( 1448081559999/1000, 1448082159999/1000,'Carly Fiorina')
-names = ['Hillary Clinton','Carly Fiorina','Bernie Sanders','BernieSanders','Marco Rubio','Donald Trump','Ted Cruz','Ben Carson','Rand Paul']
+#names = ['Hillary Clinton','Carly Fiorina','Bernie Sanders','BernieSanders','Marco Rubio','Donald Trump','Ted Cruz','Ben Carson','Rand Paul']
+
 '''
 count = 2500
 for name in names:   

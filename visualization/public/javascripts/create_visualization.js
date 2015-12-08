@@ -7,6 +7,7 @@ $(document).ready(function(){
 	// "Ted Cruz", 
 	// "Ben Carson", 
 	// "Rand Paul"];
+
 	candidateList = [];
 
 
@@ -18,6 +19,8 @@ $(document).ready(function(){
 	QTYPE_SEPARATOR = "#";
 	QUERY_SEPARATOR = ";";
 	traces = []
+  dataList = [];
+
 
 	for( var i = 0; i < 5; i++){
 		timerange.push(currentTime - (i * interval));
@@ -47,6 +50,39 @@ $(document).ready(function(){
 		return tupleList
 	}
 
+function displayChart(data){
+      var w = 400;
+  var h = 400;
+  var r = h/2;
+  var color = d3.scale.category20c();
+
+  var vis = d3.select('#chart').append("svg:svg").data([data]).attr("width", w).attr("height", h).append("svg:g").attr("transform", "translate(" + r + "," + r + ")");
+  var pie = d3.layout.pie().value(function(d){return d.value;});
+
+  // declare an arc generator function
+  var arc = d3.svg.arc().outerRadius(r);
+
+  // select paths, use arc generator to draw
+  var arcs = vis.selectAll("g.slice").data(pie).enter().append("svg:g").attr("class", "slice");
+  arcs.append("svg:path")
+      .attr("fill", function(d, i){
+          return color(i);
+      })
+      .attr("d", function (d) {
+          // log the result of the arc generator to show how cool it is :)
+          console.log(arc(d));
+          return arc(d);
+      });
+
+  // add the text
+  arcs.append("svg:text").attr("transform", function(d){
+        d.innerRadius = 0;
+        d.outerRadius = r;
+      return "translate(" + arc.centroid(d) + ")";}).attr("text-anchor", "middle").text( function(d, i) {
+      return data[i].label;}
+      );
+
+  }
 	function detuple(tuple){
 		return tuple.split(")")[0].split("(")[1].split(", ");
 	}
@@ -90,6 +126,40 @@ $(document).ready(function(){
     
  })
 
+  $('#show_chart').click(function(){
+       candidates = ["Hillary Clinton","Carly Fiorina","Bernie Sanders","Marco Rubio", "Donald Trump", "Ted Cruz", "Ben Carson", "Rand Paul"];
+    startTime = $("#start").val();
+    endTime = $("#end").val();
+
+    (function(candidates, startTime, endTime, callback){
+
+    for(var i = 0; i < candidates.length; i++){
+      var candidate = candidates[i];
+
+      // modify query to do incremental counts later
+      query = serialize("4", [startTime, endTime, candidate]);
+    $.get("/select/" + encodeURIComponent(query), function(d){
+        response = deserialize(d["content"]["data"]);
+
+        tuple = detuple(response[0])
+        count = convertToInt(tuple[1])
+        current_candidate = tuple[2]
+
+        element = {"label": current_candidate, "value": count}
+        callback(element)
+    });
+
+    }
+    })(candidates, startTime, endTime, addCounts);
+ })
+
+  function addCounts(count){
+    dataList.push(count);
+    if (dataList.length == 8){
+      displayChart(dataList);
+    }
+  }
+
   $('#get_inc_count').click(function(){
     candidate = $('input[type=radio]:checked').attr('id');
     startTime = $("#start").val();
@@ -113,47 +183,9 @@ $(document).ready(function(){
 
     	endUNIX = parseInt($('#end').val());
 
-
-		// query = '4#1448081559999|1448082159999|Hillary Clinton;';
-		// $.get('/select/' + encodeURIComponent(query), function(data){
-		// 	console.log(data);
-		// 	var tupleList = deserialize(data["content"]["data"]);
-		// 	for(var i = 0; i < tupleList.length; i++){
-		// 		console.log(detuple(tupleList[i]));
-		// 	}
-		// 	// timestamp = 120;
-		// 	// value = data["content"]["data"];
-		//  //    // old data
-		//  //    data = [{x: 1,y: 5},{x: 20,y: 20}, {x: 40,y: 10}, {x: 60,y: 40}, {x: 80,y: 100}, {x: 100,y: 60}]
-		//  //    // add new data point to end
-		//  //    data.push({x: timestamp, y: value})
-		//  //    makeGraph(data);
-		//   })
-
 		    for(var i = 0; i < candidateList.length; i++){
 		    	var candidate = candidateList[i];
 
-
-					// var trace = { "x" : [], "y" : [], "type" : "scatter", "line" : { color: 'rgb(55, 128, 191)',}};
-
-					// for(var j = 0; j < timerange.length; j++){
-
-					// 	(function(UNIX_timestamp_ms, candidate, callback){
-					// 		query = generateSelectQuery(UNIX_timestamp_ms, candidate);
-
-							// $.get("/select/" + encodeURIComponent(query),
-							// 	function(data){
-							// 		var trace = {};
-							// 		var result = data["content"]["data"];
-							// 		trace["candidate"]  = candidate.toString();
-							// 		trace["unix_time"] = UNIX_timestamp_ms;
-							// 		trace["count"]= result;
-
-							// 		callback(trace);
-							// 	});
-					// 	})(timerange[j], candidate, addToTraces);
-
-					// }
 					(function(startUNIX, endUNIX, candidate, callback){
 
 						query = serialize("4", [startUNIX.toString(), endUNIX.toString(), candidate]);
