@@ -1,6 +1,20 @@
 $(document).ready(function(){
 	candidateList = [];
 
+
+var timeDate = $('#datetime24').combodate({
+    minYear: 2015,
+    maxYear: 2015,
+    minuteStep: 5
+}); 
+
+var EndtimeDate = $('#datetime24end').combodate({
+    minYear: 2015,
+    maxYear: 2015,
+    minuteStep: 5
+}); 
+
+
   // initialize axes for graph
   makeGraph([])
 
@@ -134,8 +148,12 @@ function displayChart(data){
       dataList = []
        candidates = ["Hillary Clinton","Carly Fiorina","Bernie Sanders","Marco Rubio", "Donald Trump", "Ted Cruz", "Ben Carson", "Rand Paul"];
        console.log(candidates)
-    startTime = parseInt($("#start").val());
-    endTime = parseInt($("#end").val());
+   // startTime = parseInt($("#start").val());
+comboStartTime = timeDate[0].value + " GMT";
+    startTime = parseInt(Date.parse(comboStartTime));
+ comboEndTime = EndtimeDate[0].value + " GMT";
+    endTime = parseInt(Date.parse(comboEndTime));
+    //endTime = parseInt($("#end").val());
     interval = parseInt($('#interval').val()) * five_minutes_in_ms;
 
     (function(candidates, startTime, endTime, interval,callback){
@@ -179,9 +197,14 @@ function displayChart(data){
 
   $('#get_inc_count').click(function(){
     candidate = $('input[type=radio]:checked').attr('id');
-    startTime = $("#start").val();
-    endTime = $("#end").val();
+    //startTime = $("#start").val();
 
+    comboStartTime = timeDate[0].value + " GMT";
+    startTime = parseInt(Date.parse(comboStartTime));
+  //  endTime = $("#end").val();
+
+    comboEndTime = EndtimeDate[0].value + " GMT";
+    endTime = parseInt(Date.parse(comboEndTime));
     query = '7#' + startTime + '|' + endTime + '|' + candidate + ";";
 
 
@@ -196,9 +219,16 @@ function displayChart(data){
     $('#show_visualization').click(function(){
     	initializeTraces();
     	interval = parseInt($('#interval').val()) * five_minutes_in_ms;
-    	startUNIX = parseInt($('#start').val());
-
-    	endUNIX = parseInt($('#end').val());
+    	//startUNIX = parseInt($('#start').val());
+   
+    comboStartTime = timeDate[0].value + " GMT";
+    startUNIX = parseInt(Date.parse(comboStartTime));
+    //console.log("comboStartTime", comboStartTime);
+    //console.log("startTime, ", timeDate[0].value);
+    console.log("combo start time ", parseInt(Date.parse(comboStartTime)));
+ comboEndTime = EndtimeDate[0].value + " GMT";
+    endUNIX= parseInt(Date.parse(comboEndTime));
+    	//endUNIX = parseInt($('#end').val());
 
 		    for(var i = 0; i < candidateList.length; i++){
 		    	var candidate = candidateList[i];
