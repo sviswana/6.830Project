@@ -12,6 +12,8 @@ class Database:
         self.counts = {"Hillary Clinton":0,"Carly Fiorina":0,"Bernie Sanders":0,"Marco Rubio":0, "Donald Trump":0, "Ted Cruz":0, "Ben Carson":0, "Rand Paul":0}
         self.runningMean = {"Hillary Clinton":0,"Carly Fiorina":0,"Bernie Sanders":0,"Marco Rubio":0, "Donald Trump":0, "Ted Cruz":0, "Ben Carson":0, "Rand Paul":0}
         self.runningVar = {"Hillary Clinton":0,"Carly Fiorina":0,"Bernie Sanders":0,"Marco Rubio":0, "Donald Trump":0, "Ted Cruz":0, "Ben Carson":0, "Rand Paul":0}
+        self.totalCounts = {"Hillary Clinton":0,"Carly Fiorina":0,"Bernie Sanders":0,"Marco Rubio":0, "Donald Trump":0, "Ted Cruz":0, "Ben Carson":0, "Rand Paul":0}
+        self.squaredCounts = {"Hillary Clinton":0,"Carly Fiorina":0,"Bernie Sanders":0,"Marco Rubio":0, "Donald Trump":0, "Ted Cruz":0, "Ben Carson":0, "Rand Paul":0}
         self.previousBucket = (int(time.time()) / 300) % 288
         self.candidateList = ["Hillary Clinton","Carly Fiorina","Bernie Sanders","Marco Rubio", "Donald Trump", "Ted Cruz", "Ben Carson", "Rand Paul"]
         self.incrementalCount = {}  
@@ -62,8 +64,10 @@ class Database:
                 else:
                     count = 0
                     squaredCount = 0
+                self.totalCounts[str(candidate)] += count
+                self.squaredCounts[str(candidate)] += squaredCount
                 newMean = self.updateMean(self.counts[str(candidate)]+1, self.runningMean[str(candidate)], count)
-                newVar = self.updateVar(self.counts[str(candidate)]+1, count, squaredCount)
+                newVar = self.updateVar(self.counts[str(candidate)]+1, self.totalCounts[str(candidate)], self.squaredCounts[str(candidate)])
                 self.runningVar[str(candidate)] = newVar
                 self.runningMean[str(candidate)] = newMean
                 self.counts[str(candidate)]+=1
