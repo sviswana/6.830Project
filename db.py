@@ -245,6 +245,7 @@ class Database:
         return finalList
 
     def selectRangeAndInterval(self, startTime, endTime, interval, keyword):
+        interval = interval / 300000
         tick = interval * 60
         numBuckets = interval / 5
         bucketMod = self.setWindow(interval)
