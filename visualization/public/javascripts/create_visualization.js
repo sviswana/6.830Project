@@ -1,20 +1,8 @@
 $(document).ready(function(){
-	// candidateList = ["Hillary Clinton",
-	// "Carly Fiorina",
-	// "Bernie Sanders",
-	// "Marco Rubio", 
-	// "Donald Trump", 
-	// "Ted Cruz", 
-	// "Ben Carson", 
-	// "Rand Paul"];
-
-
-
-
 	candidateList = [];
 
-// initialize axes for graph
-makeGraph([])
+  // initialize axes for graph
+  makeGraph([])
 
 	timerange = [];
 	five_minutes_in_ms = 300000;
@@ -24,7 +12,7 @@ makeGraph([])
 	QTYPE_SEPARATOR = "#";
 	QUERY_SEPARATOR = ";";
 	traces = []
-  dataList = [];
+  var dataList = [];
 
 
 	for( var i = 0; i < 5; i++){
@@ -56,20 +44,20 @@ makeGraph([])
 	}
 
 function displayChart(data){
-      var w = 400;
-  var h = 400;
-  var r = h/2;
-  var color = d3.scale.category20c();
+    var w = 400;
+    var h = 400;
+    var r = h/2;
+    var color = d3.scale.category20c();
 
-  var vis = d3.select('#chart').append("svg:svg").data([data]).attr("width", w).attr("height", h).append("svg:g").attr("transform", "translate(" + r + "," + r + ")");
-  var pie = d3.layout.pie().value(function(d){return d.value;});
+    var vis = d3.select('#chart').append("svg:svg").data([data]).attr("width", w).attr("height", h).append("svg:g").attr("transform", "translate(" + r + "," + r + ")");
+    var pie = d3.layout.pie().value(function(d){return d.value;});
 
-  // declare an arc generator function
-  var arc = d3.svg.arc().outerRadius(r);
+    // declare an arc generator function
+    var arc = d3.svg.arc().outerRadius(r);
 
-  // select paths, use arc generator to draw
-  var arcs = vis.selectAll("g.slice").data(pie).enter().append("svg:g").attr("class", "slice");
-  arcs.append("svg:path")
+    // select paths, use arc generator to draw
+    var arcs = vis.selectAll("g.slice").data(pie).enter().append("svg:g").attr("class", "slice");
+    arcs.append("svg:path")
       .attr("fill", function(d, i){
           return color(i);
       })
@@ -94,6 +82,8 @@ function displayChart(data){
     .attr("transform","translate(50,30)")
     .style("font-size","12px")
     .call(d3.legend)
+
+    //dataList = []
 
   }
 	function detuple(tuple){
@@ -140,9 +130,12 @@ function displayChart(data){
  })
 
   $('#show_chart').click(function(){
+      $('#chart').html("");
+      dataList = []
        candidates = ["Hillary Clinton","Carly Fiorina","Bernie Sanders","Marco Rubio", "Donald Trump", "Ted Cruz", "Ben Carson", "Rand Paul"];
-    startTime = $("#start").val();
-    endTime = $("#end").val();
+       console.log(candidates)
+    startTime = parseInt($("#start").val());
+    endTime = parseInt($("#end").val());
     interval = parseInt($('#interval').val()) * five_minutes_in_ms;
 
     (function(candidates, startTime, endTime, interval,callback){
@@ -151,25 +144,35 @@ function displayChart(data){
       var candidate = candidates[i];
 
       // modify query to do incremental counts later
-      query = serialize("4", [startTime, endTime, interval, candidate]);
+      query = serialize("4", [startTime.toString(), endTime.toString(), interval.toString(), candidate]);
+      console.log(query)
     $.get("/select/" + encodeURIComponent(query), function(d){
+      console.log("GET!")
         response = deserialize(d["content"]["data"]);
-
-        tuple = detuple(response[0])
-        count = convertToInt(tuple[1])
-        current_candidate = tuple[2]
+        console.log(response)
+        count = 0
+        current_candidate = ""
+        for (i = 0; i < response.length; i++){
+          tuple = detuple(response[i])
+          count += convertToInt(tuple[1])
+          current_candidate = tuple[2]
+        }
+        //tuple = detuple(response[0])
+        //count = convertToInt(tuple[1])
+        //current_candidate = tuple[2]
 
         element = {"label": current_candidate, "value": count}
-        callback(element)
+        callback(element, candidates)
     });
 
     }
     })(candidates, startTime, endTime, interval, addCounts);
  })
 
-  function addCounts(count){
+  function addCounts(count, candidates){
     dataList.push(count);
-    if (dataList.length == 8){
+    console.log(dataList)
+    if (dataList.length >= candidates.length){
       displayChart(dataList);
     }
   }
