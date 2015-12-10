@@ -64,7 +64,7 @@ class QueryType(Enum):
     INSERT = 2
     SELECT = 3
     SELECTRANGE = 4
-    SERVER_REPLY = 5
+    INC_VAR = 5
     INC_AVG = 6
     INC_COUNT = 7
 
