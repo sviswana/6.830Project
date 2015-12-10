@@ -1,3 +1,4 @@
+
 import json
 import os
 import ast
@@ -5,10 +6,12 @@ import random
 import time
 #[update <timestamp> Hillary 5]
 from LRU import LRU
+import collections
 class Database:
     
 
     def __init__(self):
+
         self.counts = {"Hillary Clinton":0,"Carly Fiorina":0,"Bernie Sanders":0,"Marco Rubio":0, "Donald Trump":0, "Ted Cruz":0, "Ben Carson":0, "Rand Paul":0}
         self.runningMean = {"Hillary Clinton":0,"Carly Fiorina":0,"Bernie Sanders":0,"Marco Rubio":0, "Donald Trump":0, "Ted Cruz":0, "Ben Carson":0, "Rand Paul":0}
         self.runningVar = {"Hillary Clinton":0,"Carly Fiorina":0,"Bernie Sanders":0,"Marco Rubio":0, "Donald Trump":0, "Ted Cruz":0, "Ben Carson":0, "Rand Paul":0}
@@ -19,7 +22,7 @@ class Database:
         self.incrementalCount = {}  
         self.incrementalCount["startTime"] =  int(time.time()) / 300    
         self.incrementalCount["lastTime"] =  int(time.time()) / 300
-
+        #LRU.cache = collections.OrderedDict()
     def get_data(self,timestamp,data):
         ##assumes timestamp is passed in seconds
         filename = timestamp / 86400
@@ -82,10 +85,10 @@ class Database:
             print("INCREMENTAL COUNT", self.incrementalCount)
             self.previousBucket = bucket
         #print 'dataMap', dataMap#str(dataMap).replace("u\'","\'")
-        print "bucket", bucket
+        #print "bucket", bucket
         keywords = dataMap[str(bucket)]
         bucket = str(bucket)
-        print 'keywords', keywords
+        #print 'keywords', keywords
         if not keyword in keywords:
             print 'not in keyword so adding'
             dataMap[bucket][keyword] = count 
@@ -157,7 +160,11 @@ class Database:
         return str(float(totalCounts) / buckets)
 
     def getRunningAverage(self, candidate):
-        return str(self.runningMean[candidate])
+        print "start time running average", time.clock()
+        ans = self.runningMean[candidate]
+        print "end time running average", time.clock()
+        return str(ans)
+        #return str(self.runningMean[candidate])
 
     def getRunningVariance(self, candidate):
         return str(self.runningMean[candidate])
@@ -223,7 +230,6 @@ class Database:
                 startB = 0
                 endB = bucketMod -1
             for bucketNumber in range(startB, endB+1):
-
                 bucketNumber = str(bucketNumber)
                 if LRU.get(str(fileNumber)) == -1:
                     with open(str(fileNumber)+'.txt') as data_file:
@@ -249,6 +255,9 @@ class Database:
         return finalList
 
     def selectRangeAndInterval(self, startTime, endTime, interval, keyword):
+        stime = time.time()
+        print "start time in select range and interval", stime
+        print "start time in select range and interval process", time.clock()
         interval = interval / 300000
         tick = interval * 60
         numBuckets = interval / 5
@@ -260,7 +269,20 @@ class Database:
 #If timestamps span more than a day, we need to ensure that we get all the buckets in the range
         t = startTime
         finalList = []
+        
         for fileNumber in range(startFileNumber, endFileNumber+1):
+            if LRU.get(str(fileNumber)) == -1:
+                with open(str(fileNumber)+'.txt') as data_file:
+                    try:
+                        dataMap = json.load(data_file)
+                        LRU.set(str(fileNumber), dataMap)
+                    except:
+                        for i in range(t, endTime+tick, tick):
+                            finalList.append((str(i), str(0), keyword))
+                        print "end time", time.time()
+                        print "end time", time.clock()
+                
+            dataMap = LRU.get(str(fileNumber))
             if fileNumber == startFileNumber:
                 startB = startBucket
                 if startFileNumber==endFileNumber:
@@ -274,21 +296,8 @@ class Database:
                 startB = 0
                 endB = bucketMod -1
             for bucketNumber in range(startB, endB+1, numBuckets):
-
                 bucketNumber = str(bucketNumber)
-                if LRU.get(str(fileNumber)) == -1:
-
-                    with open(str(fileNumber)+'.txt') as data_file:
-                        try:
-                            dataMap = json.load(data_file)
-                        except:
-                            for i in range(t, endTimestamp+tick, tick):
-                                finalList.append((str(i), str(0), keyword))
-                            return finalList
-                        LRU.set(str(fileNumber), dataMap)                        
-                        
-                else:
-                    dataMap = LRU.get(str(fileNumber))
+               
                 total_count = 0
                 for bucket in range(int(bucketNumber), int(bucketNumber) + numBuckets):
                     if str(bucket) in dataMap and str(keyword) in dataMap[str(bucket)]:
@@ -296,10 +305,14 @@ class Database:
                         total_count += count
                 finalList.append((str(t), str(total_count), keyword))
                 t = t+ tick
-            if finalList == []:
-                for i in range(t, endTimestamp+tick, tick):
-                    finalList.append((str(i), str(0), keyword))
-                return finalList        
+        if finalList == []:
+            for i in range(t, endTime+tick, tick):
+                finalList.append((str(i), str(0), keyword))
+            print "end time", time.time()
+            print "end time", time.clock()
+            return finalList       
+        print "end time", time.time()     
+        print "end time", time.clock()
         return finalList
     
     #helper function if we want to change window size for inserting in future
