@@ -167,7 +167,7 @@ class Database:
         #return str(self.runningMean[candidate])
 
     def getRunningVariance(self, candidate):
-        return str(self.runningMean[candidate])
+        return str(self.runningVar[candidate])
 
     #for right now, support start and end timestamp, and one keyword
     def selectRange(self, startTimestamp, endTimestamp, keyword):

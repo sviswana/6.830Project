@@ -75,7 +75,9 @@ def clientthread(conn):
             reply = db.getRunningAverage(params[1]);
         elif param_type == QueryType.INC_COUNT:
             reply = db.getAggregateCountInRange(msToSec(params[1]), msToSec(params[2]), params[3])
-        else:
+        elif param_type == QueryType.INC_VAR:
+	    reply = db.getRunningVariance(params[1]);
+	else:
             # throw exception
             reply = "Invalid arguments, should be start with SELECT, INSERT, or UPDATE"
         print reply
